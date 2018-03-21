@@ -1,0 +1,45 @@
+.container {
+  background-image: url('../../static/images/crap.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  height:100vh;
+  margin: 0 auto;
+}
+
+.grid h2 {
+  
+}
+
+.form-div {
+  display: flex;
+  vertical-align:middle;
+}
+.form-div form {
+  margin:auto;
+  /* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
+}
+
+.form-div .btn  {
+width: 150px;
+height: 35px;
+border-radius: 25px;
+font-size: 17px;
+color: #fff;
+border: #none;
+border-width: 10px;
+background: #387a36;
+border: 1px solid #fff;
+border-radius: 30px;;
+}
+
+/*.form-div .btn:hover {
+  background: #fff;
+  color: black;
+}*/

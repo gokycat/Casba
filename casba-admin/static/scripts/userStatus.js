@@ -1,0 +1,5 @@
+InitChart();
+
+function InitChart() {
+
+}

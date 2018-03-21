@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}{% endblock %}">
+  <meta id="my-user" data-user="{{ userJS }}">
+
+  <title>CASBA DASHBOARD</title>
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Montserrat:400,500,700" rel="stylesheet">
+  <!-- Place favicon.ico in the root directory -->
+  <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon"> -->
+  <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='styles/vendor/normalize.css') }}">
+  <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='styles/main.css') }}">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js" ></script>
+  <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='styles/login.css') }}">
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='styles/vendor/font-awesome.min.css') }}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Sidebar Holder -->
+    <nav id="sidebar" class="">
+      <div class="sidebar-header">
+         <h4><span><img src="{{ url_for('static', filename='images/Logo.png') }}" alt=""></span>CASBA</h4>
+      </div>
+
+      <ul class="list-unstyled components">
+        <li>
+          <div class="sidebar-icons-parent-div row">
+            <div class="sidebar-icons col-xs-4 col-sm-4 col-md-4">
+              <p class="fa fa-home"></p>
+            </div>
+            <div class="col-xs-8 col-sm-8 col-md-8">
+              <p><a href="{{ url_for('dashboard') }}">DASHBOARD</a></p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="sidebar-icons-parent-div row">
+            <div class="sidebar-icons col-xs-4 col-sm-4 col-md-4">
+              <p style="font-size:24px;">₦</p>
+            </div>
+            <div class="col-xs-8 col-sm-8 col-md-8">
+              <p><a href="{{ url_for('transactions') }}">TRANSACTIONS</a></p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="sidebar-icons-parent-div row">
+            <div class="sidebar-icons col-xs-4 col-sm-4 col-md-4">
+              <p class="fa fa-comments"></p>
+            </div>
+            <div class="col-xs-8 col-sm-8 col-md-8">
+              <p><a href="{{ url_for('conversations') }}">CONVERSATIONS</a></p>
+             </div>
+          </div>
+        </li>
+        <li>
+          <div class="sidebar-icons-parent-div row">
+            <div class="sidebar-icons col-xs-4 col-sm-4 col-md-4">
+              <p class="fa fa-users"></p>
+            </div>
+            <div class="col-xs-8 col-sm-8 col-md-8">
+              <p><a href="{{ url_for('users') }}">USERS</a></p>
+             </div>
+          </div>
+        </li>
+      </ul>
+      <div class="footer">
+        <p> © Josla Electric Company</p>
+      </div>
+    </nav>
+
+    <!-- Page Content Holder -->
+    <div id="content">
+
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-1">
+              <div class="navbar-header">
+                <button type="button" id="sidebarCollapse" class="navbar-btn">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="balance-Settlement">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="tab">
+                      <p>Balance</p>
+                      <h3><b>₦100, 000<b></h3>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="tab">
+                      <p>Settlements</p>
+                      <h3><b>₦50, 000<b></h3>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="alert-Logout">
+                <p><a href="#">Alerts</a></p>
+                <p><a href="{{ url_for('logout') }}">Log out</a></p>
+              </div>
+            </div>
+          </div>
+      </nav>
+      <div class="" id="main-content">
+        <!-- Flash Messages JE001 !-->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flashes list-unstyled">
+              {% for message in messages %}
+              <div class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <li>{{ message }}</li>
+              </div>
+              {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+
+        <div class="row">
+          <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="" id="avatar">
+              <p class="fa fa-user"></p>
+            </div>
+          </div>
+          <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="" id="personal-details">
+              <p id="user-names"></p>
+              <p id="user-bvn"></p>
+              <p id="user-dob"></p>
+              <p id="user-phone"></p>
+              <p id="user-email"></p>
+            </div>
+          </div>
+          <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="" id="financials">
+              <p id="user-accounts"></p>
+              <p id="user-cards"></p>
+              <p id="user-reg"></p>
+              <p id="user-login"></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='scripts/vendor/modernizr-3.5.0.min.js') }}"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="{{ url_for('static', filename='scripts/plugins.js') }}"></script>
+  <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='scripts/user.js') }}"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+</body>
+</html>
