@@ -1,0 +1,215 @@
+.navBar {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 9999;
+  height: 58px;
+  max-height: 54px;
+  font-size: 14px;
+  line-height: 3.14286;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  display: -webkit-box;
+  opacity: 30%;
+  display: -ms-flexbox;
+  justify-content: space-between;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 20px;
+  padding-top: 10px;
+
+}
+
+.navBar img {
+  height: 30px;
+  width: 30px;
+}
+
+
+.navBar .list-inline {
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.navBar .list-inline a {
+  margin-right: 20px;
+  text-decoration: none;
+}
+
+.navBar p {
+  color: #fff;
+  font-size: 25px;
+}
+
+.navBar a {
+color: #ffffff;
+}
+
+.nav-list-mobile {
+  display: none;
+}
+
+.bm-burger-button {
+  display: none;
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  right: 36px;
+  top: 20px;
+}
+
+/* Color/shape of burger icon bars */
+.bm-burger-bars {
+  background: white !important;
+}
+
+/* Position and sizing of clickable cross button */
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+/* Color/shape of close button cross */
+.bm-cross {
+  background: #bdc3c7;
+}
+
+/* General sidebar styles */
+.bm-menu {
+  background: #373a47;
+  padding: 2.5em 1.5em 0;
+  font-size: 1.15em;
+}
+
+/* Morph shape necessary with bubble or elastic */
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+/* Wrapper for item list */
+.bm-item-list {
+  color: #b8b7ad;
+  padding: 0.8em;
+}
+
+/* Styling of overlay */
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.navBar .btn  {
+width: 150px;
+height: 35px;
+border-radius: 25px;
+font-size: 17px;
+color: #fff;
+border: #none;
+border-width: 10px;
+background: transparent;
+border: 1px solid #fff;
+border-radius: 30px;;
+}
+
+.navBar .btn:hover {
+  background: #fff;
+  color: black;
+}
+
+
+@media only screen and (min-width: 320px) and (max-width: 800px) {
+  .navBar .btn  {
+    width: auto;
+    height: auto;
+  }
+  .nav-list-desktop {
+    display: none;
+  }
+  .nav-list-mobile {
+    display: none;
+  }
+  .navBar .list-inline {
+    float: none;
+    display: none;
+  }
+  .navBar .list-inline a {
+    margin-right: auto;
+  }
+  .navBar p {
+    font-size: 15px;
+  }
+  .nav {
+
+  }
+  .nav-item {
+    width:100%;
+    float:none;
+    margin: auto;
+  }
+
+  .navBar img {
+    max-height: 50px;
+    max-width: 50px;
+    margin: auto;
+  }
+
+
+  /* Position and sizing of burger button */
+.bm-burger-button {
+  display: block;
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  right: 36px;
+  top: 20px;
+}
+
+/* Color/shape of burger icon bars */
+.bm-burger-bars {
+  background: white !important;
+}
+
+/* Position and sizing of clickable cross button */
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+/* Color/shape of close button cross */
+.bm-cross {
+  background: #bdc3c7;
+}
+
+/* General sidebar styles */
+.bm-menu {
+  background: #373a47;
+  padding: 2.5em 1.5em 0;
+  font-size: 1.15em;
+}
+
+/* Morph shape necessary with bubble or elastic */
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+/* Wrapper for item list */
+.bm-item-list {
+  color: #b8b7ad;
+  padding: 0.8em;
+}
+
+/* Styling of overlay */
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+}

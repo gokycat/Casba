@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+    {% block title %}Dashboard{% endblock %}
+    {% block head %}
+{{ super() }}
+<style>
+</style>
+{% endblock %}
+{% block content %}
+<div class="" id="main-content">
+  <div class="row">
+    <!-- Flash Messages JE001 !-->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class="flashes list-unstyled">
+          {% for message in messages %}
+          <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <li>{{ message }}</li>
+          </div>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="total-trans-tab" id="total-trans-tab">
+        <p>Total Transactions:</p>
+        <h3><b>{{ transactions['count'] }}<b></h3>
+      </div>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="total-conv-tab">
+        <p>Total conversations:</p>
+        <h3><b>14,000<b></h3>
+      </div>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="total-users-tab" id="total-users-tab">
+        <p>Total Users:</p>
+        <h3><b>{{ users['count'] }}<b></h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="successful-trans-tab">
+        <p>Successful Transactions:</p>
+        <h3><b>{{ transactions['success'] }}<b></h3>
+      </div>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="max-conv-tab">
+        <p>Max Conversation:</p>
+        <h3><b>1,995<b></h3>
+      </div>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="active-users-tab" id="active-users-tab">
+        <p>Active Users:</p>
+        <h3><b>{{ users['success'] }}<b></h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="failed-trans-tab">
+        <p>Failed Transactions:</p>
+        <h3><b>{{ transactions['failure'] }}<b></h3>
+      </div>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="weak-understanding-tab">
+        <p>Weak Understanding:</p>
+        <h3><b>1,995<b></h3>
+      </div>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4">
+      <div class="restricted-users-tab" id="restricted-users-tab">
+        <p>Inactive Users:</p>
+        <h3><b>{{ users['failure'] }}<b></h3>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

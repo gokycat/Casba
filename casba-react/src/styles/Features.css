@@ -1,0 +1,51 @@
+/*Features*/
+.features {
+  background-color: #fafafa;
+}
+
+#feature-tag-line {
+  margin: 20px 10px 20px 10px;
+}
+
+.features .text-center img {
+  width: 70px;
+  height: 85px;
+  margin: 15px auto;
+}
+
+.features .text-center h4{
+  font-size: 24px;
+  line-height: 1.16667;
+  font-weight: 400;
+  letter-spacing: .009em;
+}
+
+.features .text-center small{
+  font-size: 17px;
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -.022em;
+  color: #333;
+  font-style: normal;
+}
+
+.first-row {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.second-row {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.featureWall {
+  height: 275px;
+  width: 350px;
+  background-color: #ffffff;
+  border-radius: 30px;
+  padding: 10px 20px 10px 20px;
+  border: 1px solid #ddd;
+  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);
+  margin: auto;
+}

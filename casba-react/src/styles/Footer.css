@@ -1,0 +1,41 @@
+/*Features*/
+.footer {
+  padding: 15px 30px 15px 30px;
+}
+
+.inline {
+  display: inline-flex;
+}
+
+.joslaLogo {
+  justify-content: center;
+  display: flex;
+}
+
+.joslaLogo img {
+  height: 50px;
+}
+
+.ibmLogo {
+  justify-content: center;
+  display: flex;
+}
+
+.ibmLogo img {
+  height: 100px;
+}
+
+.footerLogos {
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.joslaImage {
+  height: 50px;
+}
+
+.ibmImage {
+  height: 150px;
+}

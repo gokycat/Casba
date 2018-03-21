@@ -1,0 +1,44 @@
+.header {
+  margin: 0;
+  border-bottom: 1px solid #ddd;
+  background-color: #eee;
+  height: 80px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);
+}
+
+
+.fluid{
+    width: 35px;
+    height: 35px;
+    margin-right: 5px;
+}
+
+.dropdown {
+    display: inline-block;
+}
+
+.dropdown__content {
+    display: none;
+    position: absolute;
+}
+
+.dropdown--active .dropdown__content {
+    display: block;
+}
+
+.upload {
+    width: 100px !important;
+    height: 58px !important;
+    max-height: 54px !important;
+    border-width: 2px !important;
+    border-color: rgb(102, 102, 102) !important;
+    border-style: dashed !important;
+    border-radius: 5px !important;
+}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+    {% block title %}Transactions{% endblock %}
+    {% block head %}
+{{ super() }}
+<style>
+</style>
+{% endblock %}
+{% block content %}
+<div class="" id="main-content">
+  <!-- Flash Messages JE001 !-->
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class="flashes list-unstyled">
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <li>{{ message }}</li>
+        </div>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+
+      <form action="/users" method="get" id="" class="" role="form">
+          <label for="search-bar"></label>
+          <div class="input-group md-margin-bottom">
+            <input type="text" class="form-control" id="search-bar" onkeyup="myFunction()" name="search-bar" value="" placeholder="Search by typing user BVN, then press enter...">
+          <span class="input-group-addon">
+            <i class="fa fa-fw fa-search"></i>
+          </span>
+          </div>
+
+      </form>
+    <div class="table" id="transactionsTable"></div>
+    <div calss="row">
+      <div class="col-md-8">
+        <canvas id="transactionsChart"></canvas>
+      </div>
+      <div class="col-md-4">
+        <div class="total-users-tab" id="total-users-tab">
+          <p>Total Users:</p>
+          <h3><b>{{ transactionsSummary['count'] }}<b></h3>
+        </div>
+        <div class="active-users-tab" id="active-users-tab">
+          <p>Active Users:</p>
+          <h3><b>{{ transactionsSummary['success'] }}<b></h3>
+        </div>
+        <div class="restricted-users-tab" id="restricted-users-tab">
+          <p>Inactive Users:</p>
+          <h3><b>{{ transactionsSummary['failure'] }}<b></h3>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

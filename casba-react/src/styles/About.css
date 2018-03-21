@@ -1,0 +1,52 @@
+/*About*/
+
+.about {
+  background: linear-gradient(-180deg, #1e5c3f 100%, #0a3c34 100%);
+  height: auto;
+
+}
+
+.about .text-center {
+  padding: 25px 50px 25px 50px;
+  color: #fff;
+}
+
+.about .text-center img {
+  padding: 10px;
+  height: 100px;
+  width: 100px;
+}
+
+.about .text-center h4 {
+  padding: 10px;
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: 0em;
+}
+
+.about .text-center p {
+  font-size: 18px;
+  line-height: 1.38105;
+  font-weight: 400;
+  letter-spacing: .011em;
+}
+
+
+@media only screen and (min-width: 320px) and (max-width: 480px) {
+  .adlib {
+    margin-left: 5%;
+  }
+
+  .about .text-center h4 {
+    padding: 0px;
+    font-size: 20px;
+  }
+
+  .about .text-center img {
+    padding: 0px;
+    height: 80px;
+    width: 80px;
+  }
+
+}

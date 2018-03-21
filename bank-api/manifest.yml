@@ -1,0 +1,10 @@
+applications:
+- path: .
+  memory: 128M
+  instances: 1
+  domain: eu-gb.mybluemix.net
+  name: bank-api-dev
+  host: bank-api-dev
+  disk_quota: 1024M
+  command:  node server.js
+  buildpack: https://github.com/cloudfoundry/nodejs-buildpack
