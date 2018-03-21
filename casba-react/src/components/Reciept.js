@@ -41,7 +41,7 @@ class Reciept extends React.Component {
           </div>
           <div className='row reciept-row'>
             <div className='col-xs-6 col-sm-6 col-md-6 reciept-questions'>Description:</div>
-            <div className='col-xs-6 col-sm-6 col-md-6 reciept-answers'></div>
+            <div className='col-xs-6 col-sm-6 col-md-6 reciept-answers'>Need to pay my Sister Bills</div>
           </div>
         </div>
       </div>
