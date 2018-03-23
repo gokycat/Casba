@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>NodeJS Starter Application</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="stylesheets/style.css">
+  </head>
+
+  <body>
+    <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '2124094284495772',
+        xfbml      : true,
+        version    : 'v2.12'
+      });
+      FB.AppEvents.logPageView();
+    };
+
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <table>
+      <tr>
+        <td style= "width:30%;">
+          <img class = "newappIcon" src="images/newapp-icon.png">
+        </td>
+        <td>
+          <h1 id="message">Hello World!</h1>
+          <p class='description'></p> Thanks for creating a <span class = "blue">NodeJS Starter Application</span>.
+        </td>
+      </tr>
+    </table>
+  </body>
+
+</html>
