@@ -16,7 +16,7 @@ class MyCarousel extends React.Component {
             <div className='col-xs-4 col-sm-4 col-md-4'>
               <div className='row newWall'>
                 <div className='col-md-12'>
-                  <p>Bank</p>
+                  <p className='newWall-title text-left'>Bank</p>
                   <p><b>{account.BANK_NAME}</b></p>
                 </div>
               </div>

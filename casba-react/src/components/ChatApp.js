@@ -43,37 +43,31 @@ class ChatApp extends React.Component {
         this.setState({ transactions: message.transactions});
         this.toggleMenu();
       } else if (message.tag == 'addAccount') {
-        this.setState({ inputType: 'number'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});
         this.setState({ transactions: message.transactions});
       } else if (message.tag == 'accountBank') {
-        this.setState({ inputType: 'text'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});
         this.setState({ transactions: message.transactions});
       } else if (message.tag == 'cardNumber') {
-        this.setState({ inputType: 'number'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});
         this.setState({ transactions: message.transactions});
       } else if (message.tag == 'addCardConfirm') {
-        this.setState({ inputType: 'text'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});
         this.setState({ transactions: message.transactions});
       } else if (message.tag == 'recipientAccount') {
-        this.setState({ inputType: 'number'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});
         this.setState({ transactions: message.transactions});
       } else if (message.tag == 'transferConfirmed') {
-        this.setState({ inputType: 'text'});
         this.setState({ showReciept: true})
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
@@ -81,7 +75,6 @@ class ChatApp extends React.Component {
         this.setState({ transactions: message.transactions});
         this.toggleMenu();
       } else if (message.tag == 'paymentConfirmed') {
-        this.setState({ inputType: 'text'});
         this.setState({ showReciept: true})
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
@@ -89,7 +82,6 @@ class ChatApp extends React.Component {
         this.setState({ transactions: message.transactions});
         this.toggleMenu();
       } else if (message.tag == 'topupConfirmed') {
-        this.setState({ inputType: 'text'});
         this.setState({ showReciept: true})
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
@@ -97,13 +89,11 @@ class ChatApp extends React.Component {
         this.setState({ transactions: message.transactions});
         this.toggleMenu();
       } else if (message.tag == 'transferNotResolved') {
-        this.setState({ inputType: 'text'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});
         this.setState({ transactions: message.transactions});
       } else if (message.tag == 'addAccountConfirmed') {
-        this.setState({ inputType: 'text'});
         this.setState({ tag: message.tag});
         this.setState({ user: message.user});
         this.setState({ accounts: message.accounts});

@@ -30,3 +30,12 @@ values (
   3,
   'Disabled'
 );
+
+insert into STATUS (
+  "STATUS_ID",
+  "CATEGORY"
+)
+values (
+  4,
+  'Tester'
+);

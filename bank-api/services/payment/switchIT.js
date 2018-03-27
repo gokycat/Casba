@@ -76,7 +76,6 @@ const switchIT = {
     let switchITResponse = []
     var reference = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
     var currency = "NGN"
-    console.log(util.getBankCode(data.bankName), data.amount , data.destination )
     let xml =
     `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.fundgate.etranzact.com/">
        <soapenv:Header/>
@@ -90,10 +89,10 @@ const switchIT = {
                 <terminalId>` + terminalId + `</terminalId>
                 <transaction>
                    <pin>` + pin + `</pin>
-                   <bankCode>` + util.getBankCode(data.bankName) + `</bankCode>
+                   <bankCode>` + util.getBankCode2(data.bankName) + `</bankCode>
                    <currency>` + currency + `</currency>
                    <amount>` + data.amount + `</amount>
-                   <destination>` + data.destination + `</destination>
+                   <destination>` + util.pad_with_zeroes(data.destination, 10) + `</destination>
                    <reference>` + reference +`</reference>
                    <endPoint>A</endPoint>
                 </transaction>
@@ -155,7 +154,7 @@ const switchIT = {
                    <provider>` + data.telcoName + `</provider>
                    <lineType>VTU</lineType>
                    <amount>` + data.amount + `</amount>
-                   <destination>` + data.destination + `</destination>
+                   <destination>` + util.pad_with_zeroes(data.destination, 11) + `</destination>
                    <reference>` + reference +`</reference>
                    <senderName>` + data.senderName + `</senderName>
                    <address>Victoria Island, Lagos</address>

@@ -35,12 +35,15 @@ class RegisterForm extends React.Component {
                   type="text"
                   className='form-control'
                   onChange={this.props.setBVN}
-                  placeholder="BVN..... you can dial *565*0# to confirm"
+                  placeholder="Bank Verification Number (BVN)"
                   title="Check your BVN by dialing *565*0# on your mobile phone"
                   minLength="11"
                   maxLength="11"
                   pattern="\d{11}"
                   required />
+              </div>
+              <div id="inputHelp">
+                <small className="form-text text-muted">Check your BVN by dialing *565*0# on your mobile phone.</small>
               </div>
             </div>
             <hr></hr>
@@ -87,6 +90,9 @@ class RegisterForm extends React.Component {
                   placeholder="Phone"
                   required />
               </div>
+              <div id="inputHelp">
+                <small className="form-text text-muted">This should be the phone number registered with your BVN.</small>
+              </div>
             </div>
 
             <div className="form-group">
@@ -100,6 +106,9 @@ class RegisterForm extends React.Component {
                   onChange={this.props.setEmail}
                   placeholder="Email"
                   required />
+              </div>
+              <div id="inputHelp">
+                <small className="form-text text-muted">This should be the email you want to receive notifications.</small>
               </div>
             </div>
             <hr></hr>
@@ -116,6 +125,9 @@ class RegisterForm extends React.Component {
                 <div className="input-group-addon">
                     <a onClick={this.toggleVisibility} className='glyphicon glyphicon-eye-open'></a>
                 </div>
+              </div>
+              <div id="inputHelp">
+                <small className="form-text text-muted">Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters.</small>
               </div>
             </div>
 

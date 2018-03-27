@@ -95,8 +95,17 @@ const user = {
         } else {
           //Bind and Execute the statment asynchronously
           stmt.execute([data.value, data.bvn], function (err, result) {
-            if( err ) console.log(err);
-            else result.closeSync();
+            if( err ) {
+              console.log(err);
+              user[0] = {status:"Error"}
+              callback(null, user);
+              return conn.closeSync();
+            }
+            else {
+              user[0] = {status:"Success"}
+              callback(null, user);
+              result.closeSync();
+            }
             //Close the connection
             conn.close(function(err){});
           });

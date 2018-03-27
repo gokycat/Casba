@@ -15,7 +15,7 @@ class Messages extends React.Component {
     super(props);
     // bind the ‘this’ keyword to the event handlers
     this.infoClickHandler = this.infoClickHandler.bind(this);
-    this.accountInfoClickHandler = this.accountInfoClickHandler.bind(this);
+    this.accountClickHandler = this.accountClickHandler.bind(this);
     this.confirmClickHandler = this.confirmClickHandler.bind(this);
     this.declineClickHandler = this.declineClickHandler.bind(this);
     this.accountClickHandler = this.accountClickHandler.bind(this);
@@ -26,20 +26,29 @@ class Messages extends React.Component {
     this.transferClickHandler = this.transferClickHandler.bind(this);
     this.topupClickHandler = this.topupClickHandler.bind(this);
     this.telcoNameClickHandler = this.telcoNameClickHandler.bind(this);
-    this.payClickHandler = this.payClickHandler.bind(this);
     this.monthClickHandler = this.monthClickHandler.bind(this);
     this.billTypeClickHandler = this.billTypeClickHandler.bind(this);
     this.vendorClickHandler = this.vendorClickHandler.bind(this);
     this.vendorPackageClickHandler = this.vendorClickHandler.bind(this);
+    this.beneficiaryClickHandler = this.beneficiaryClickHandler.bind(this);
+    this.expenseTypeClickHandler = this.expenseTypeClickHandler.bind(this);
   }
 
   // event handlers
   infoClickHandler() {
-    this.props.userInfoClickHandler('Show me my basic customer information');
+    this.props.userInfoClickHandler('What is my account number');
   }
 
-  accountInfoClickHandler() {
-    this.props.userInfoClickHandler('What is my account balance');
+  transferClickHandler() {
+    this.props.userInfoClickHandler('I want to send some money');
+  }
+
+  topupClickHandler() {
+    this.props.userInfoClickHandler('I would like to buy airtime');
+  }
+
+  analyticsClickHandler() {
+    this.props.userInfoClickHandler('How much have I spent');
   }
 
   confirmClickHandler() {
@@ -66,6 +75,10 @@ class Messages extends React.Component {
     this.props.clickHandler(bankName[0].toUpperCase() + bankName.substring(1));
   }
 
+  beneficiaryClickHandler(beneficiary) {
+    this.props.clickHandler(beneficiary);
+  }
+
   telcoNameClickHandler(telcoName) {
     this.props.clickHandler(telcoName[0].toUpperCase() + telcoName.substring(1));
   }
@@ -90,23 +103,15 @@ class Messages extends React.Component {
     this.props.clickHandler(billType);
   }
 
-  transferClickHandler() {
-    this.props.userInfoClickHandler('I want to send some money');
-  }
-
-  topupClickHandler() {
-    this.props.userInfoClickHandler('I would like to buy airtime');
-  }
-
-  payClickHandler() {
-    this.props.userInfoClickHandler('I want to pay bill');
+  expenseTypeClickHandler(expenseType) {
+    this.props.clickHandler(expenseType);
   }
 
   //view
   render() {
     // Loop through all the messages in the state and create a Message component
     const messages = this.props.messages.map((message, i) => {
-      if(message.tag == 'begin') {
+      if(message.tag == 'hello') {
         return (
           <div>
           <Message
@@ -114,28 +119,11 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Info' click={this.infoClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate'  />
-          <Button btnValue='Budget' />
-          </div>
-        );
-      } else if(message.tag == 'hello') {
-        return (
-          <div>
-          <Message
-          key={i}
-          user={this.props.user}
-          message={message.message}
-          fromMe={message.fromMe} />
-          <Button btnValue='Info' click={this.infoClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate'  />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
+          <Button btnValue='Add account' click={this.addAccountClickHandler} />
           </div>
         );
       } else if(message.tag == 'noAccount') {
@@ -168,12 +156,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Info' click={this.infoClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'userInfo') {
@@ -184,11 +170,25 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
+          </div>
+        );
+      } else if(message.tag == 'transferDescription') {
+        return (
+          <div>
+          <Message
+          key={i}
+          user={this.props.user}
+          message={message.message}
+          fromMe={message.fromMe} />
+          <Button btnValue='Housing' click={this.expenseTypeClickHandler.bind(this, 'Housing')} />
+          <Button btnValue='Food' click={this.expenseTypeClickHandler.bind(this, 'Food')} />
+          <Button btnValue='Transport' click={this.expenseTypeClickHandler.bind(this, 'Transport')} />
+          <Button btnValue='Entertainment' click={this.expenseTypeClickHandler.bind(this, 'Entertainment')} />
+          <Button btnValue='Loan' click={this.expenseTypeClickHandler.bind(this, 'Loan')} />
           </div>
         );
       } else if(message.tag == 'viewAccount') {
@@ -214,6 +214,19 @@ class Messages extends React.Component {
           fromMe={message.fromMe} />
           <div>
           {message.accounts.map((account, i) => <button key={i} className={'btn btn-default bank-btn ' + account.BANK_NAME} onClick={this.bankNameClickHandler.bind(this, account.ACCOUNT_NO)}>{account.ACCOUNT_NO}</button>)}
+          </div>
+          </div>
+        );
+      } else if(message.tag == 'recipientAccount') {
+        return (
+          <div>
+          <Message
+          key={i}
+          user={this.props.user}
+          message={message.message}
+          fromMe={message.fromMe} />
+          <div>
+          {message.beneficiaries.map((beneficiary, i) => <button key={i} className={'btn btn-default bank-btn ' + beneficiary.BANK_NAME} onClick={this.beneficiaryClickHandler.bind(this, beneficiary.ACCOUNT_NO)}>{beneficiary.NAME}</button>)}
           </div>
           </div>
         );
@@ -252,11 +265,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add account' click={this.addAccountClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'accountBank') {
@@ -294,6 +306,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add account' click={this.addAccountClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'transferNotResolved') {
@@ -304,8 +320,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='User' click={this.infoClickHandler} />
-          <Button btnValue='Account' click={this.accountInfoClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'topupNotResolved') {
@@ -316,8 +334,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='User' click={this.infoClickHandler} />
-          <Button btnValue='Account' click={this.accountInfoClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'cardNotResolved') {
@@ -329,6 +349,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add card' click={this.addAccountClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'resetPasswordConfirm') {
@@ -436,6 +460,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add account' click={this.addAccountClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'paymentDeclined') {
@@ -447,6 +475,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add account' click={this.addAccountClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'addCardDeclined') {
@@ -458,6 +490,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add card' click={this.addCardClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'deleteAccountConfirmed') {
@@ -469,6 +505,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add account' click={this.addAccountClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'deleteCardConfirmed') {
@@ -480,6 +520,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add card' click={this.addCardClickHandler} />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'addAccountConfirmed') {
@@ -491,11 +535,10 @@ class Messages extends React.Component {
           message={message.message}
           fromMe={message.fromMe} />
           <Button btnValue='Add Card' click={this.addCardClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'transferConfirmed') {
@@ -506,26 +549,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
-          </div>
-        );
-      } else if(message.tag == 'transferConfirmed') {
-        return (
-          <div>
-          <Message
-          key={i}
-          user={this.props.user}
-          message={message.message}
-          fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'topupConfirmed') {
@@ -536,11 +563,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'transferDeclined') {
@@ -551,11 +577,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'topupDeclined') {
@@ -566,11 +591,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'addCardConfirmed') {
@@ -581,11 +605,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'deleteAccountDeclined') {
@@ -596,12 +619,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Info' click={this.infoClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'deleteCardDeclined') {
@@ -612,12 +633,10 @@ class Messages extends React.Component {
           user={this.props.user}
           message={message.message}
           fromMe={message.fromMe} />
-          <Button btnValue='Info' click={this.infoClickHandler} />
-          <Button btnValue='Bills' click={this.payClickHandler} />
-          <Button btnValue='Airtime' click={this.topupClickHandler} />
-          <Button btnValue='Transfer' click={this.transferClickHandler} />
-          <Button btnValue='Locate' />
-          <Button btnValue='Budget' />
+          <Button btnValue='Account Info' click={this.infoClickHandler} />
+          <Button btnValue='Fund Transfer' click={this.transferClickHandler} />
+          <Button btnValue='Airtime Topup' click={this.topupClickHandler} />
+          <Button btnValue='Expense Manager' click={this.analtyicsClickHandler} />
           </div>
         );
       } else if(message.tag == 'expiryMonth') {

@@ -48,6 +48,9 @@ app.use('/bank/transfer', bankTransferController);
 var debitAccountController = require('./controller/debitAccountController');
 app.use('/account/debit', debitAccountController);
 
+var balanceEnquiryController = require('./controller/balanceEnquiryController');
+app.use('/wallet/balance', balanceEnquiryController);
+
 var fundTransferController = require('./controller/fundTransferController');
 app.use('/transfer/fund', fundTransferController);
 
@@ -101,5 +104,14 @@ app.use('/bank', bankController);
 
 var accountTypeController = require('./controller/accountTypeController');
 app.use('/account/type', accountTypeController);
+
+var beneficiaryController = require('./controller/beneficiaryController');
+app.use('/beneficiary', beneficiaryController);
+
+var beneficiaryXController = require('./controller/beneficiaryXController');
+app.use('/beneficiary/recipient', beneficiaryXController);
+
+var phoneKYCController = require('./controller/phoneKYCController');
+app.use('/kyc/phone', phoneKYCController);
 
 module.exports = app;

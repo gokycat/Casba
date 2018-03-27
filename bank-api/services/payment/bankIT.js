@@ -27,9 +27,8 @@ const bankIT = {
     let bankITResponse = []
     var sessionid = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
     var transactionid = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
-    var description = 'Test Payment'
-    var mac = crypto.createHash('sha256').update(sessionid+clientid+terminalid_transfer+transactionid+util.pad_with_zeroes(data.accountNo, 10)+util.getBankCode(data.bankName)+serviceid+data.amount+description+merchantcode_transfer+clientkey, 'utf-8').digest("hex")
-    var param = JSON.stringify({"clientid": clientid, "action": "initialize", "sessionid":sessionid, "mac":mac, "terminalid":terminalid_transfer, "transactionid":transactionid, "bank":util.getBankCode(data.bankName), "accountnumber":util.pad_with_zeroes(data.accountNo, 10), "serviceid":serviceid, "amount":data.amount, "description":description, "merchantcode":merchantcode_transfer})
+    var mac = crypto.createHash('sha256').update(sessionid+clientid+terminalid_transfer+transactionid+util.pad_with_zeroes(data.accountNo, 10)+util.getBankCode(data.bankName)+serviceid+data.amount+data.description+merchantcode_transfer+clientkey, 'utf-8').digest("hex")
+    var param = JSON.stringify({"clientid": clientid, "action": "initialize", "sessionid":sessionid, "mac":mac, "terminalid":terminalid_transfer, "transactionid":transactionid, "bank":util.getBankCode(data.bankName), "accountnumber":util.pad_with_zeroes(data.accountNo, 10), "serviceid":serviceid, "amount":data.amount, "description":data.description, "merchantcode":merchantcode_transfer})
     var uri = "https://www.etranzact.net/bankIT/service_bankitapi?json="+param
     // var uri = "http://demo.etranzact.com/bankIT/service_bankitapi?json="+param
     request.post({
@@ -93,9 +92,8 @@ const bankIT = {
     let bankITResponse = []
     var sessionid = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
     var transactionid = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
-    var description = 'Test Payment'
-    var mac = crypto.createHash('sha256').update(sessionid+clientid+terminalid_topup+transactionid+util.pad_with_zeroes(data.accountNo, 10)+util.getBankCode(data.bankName)+serviceid+data.amount+description+merchantcode_topup+clientkey, 'utf-8').digest("hex")
-    var param = JSON.stringify({"clientid": clientid, "action": "initialize", "sessionid":sessionid, "mac":mac, "terminalid":terminalid_topup, "transactionid":transactionid, "bank":util.getBankCode(data.bankName), "accountnumber":util.pad_with_zeroes(data.accountNo, 10), "serviceid":serviceid, "amount":data.amount, "description":description, "merchantcode":merchantcode_topup})
+    var mac = crypto.createHash('sha256').update(sessionid+clientid+terminalid_topup+transactionid+util.pad_with_zeroes(data.accountNo, 10)+util.getBankCode(data.bankName)+serviceid+data.amount+data.description+merchantcode_topup+clientkey, 'utf-8').digest("hex")
+    var param = JSON.stringify({"clientid": clientid, "action": "initialize", "sessionid":sessionid, "mac":mac, "terminalid":terminalid_topup, "transactionid":transactionid, "bank":util.getBankCode(data.bankName), "accountnumber":util.pad_with_zeroes(data.accountNo, 10), "serviceid":serviceid, "amount":data.amount, "description":data.description, "merchantcode":merchantcode_topup})
     var uri = "https://www.etranzact.net/bankIT/service_bankitapi?json="+param
     // var uri = "http://demo.etranzact.com/bankIT/service_bankitapi?json="+param
     request.post({
@@ -159,9 +157,8 @@ const bankIT = {
     let bankITResponse = []
     var sessionid = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
     var transactionid = (Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)
-    var description = 'Test Payment'
-    var mac = crypto.createHash('sha256').update(sessionid+clientid+terminalid_payment+transactionid+util.pad_with_zeroes(data.accountNo, 10)+util.getBankCode(data.bankName)+serviceid+data.amount+description+merchantcode_payment+clientkey, 'utf-8').digest("hex")
-    var param = JSON.stringify({"clientid": clientid, "action": "initialize", "sessionid":sessionid, "mac":mac, "terminalid":terminalid_payment, "transactionid":transactionid, "bank":util.getBankCode(data.bankName), "accountnumber":util.pad_with_zeroes(data.accountNo, 10), "serviceid":serviceid, "amount":data.amount, "description":description, "merchantcode":merchantcode_payment})
+    var mac = crypto.createHash('sha256').update(sessionid+clientid+terminalid_payment+transactionid+util.pad_with_zeroes(data.accountNo, 10)+util.getBankCode(data.bankName)+serviceid+data.amount+data.description+merchantcode_payment+clientkey, 'utf-8').digest("hex")
+    var param = JSON.stringify({"clientid": clientid, "action": "initialize", "sessionid":sessionid, "mac":mac, "terminalid":terminalid_payment, "transactionid":transactionid, "bank":util.getBankCode(data.bankName), "accountnumber":util.pad_with_zeroes(data.accountNo, 10), "serviceid":serviceid, "amount":data.amount, "description":data.description, "merchantcode":merchantcode_payment})
     var uri = "https://www.etranzact.net/bankIT/service_bankitapi?json="+param
     // var uri = "http://demo.etranzact.com/bankIT/service_bankitapi?json="+param
     request.post({
@@ -222,6 +219,7 @@ const bankIT = {
   },
 
   finalise: function (data, callback) {
+     console.log(data)
     let bankITResponse = []
     console.log('Finalise Payment');
     var mac = crypto.createHash('sha256').update(data.sessionid+clientid+util.pad_with_zeroes(data.esacode, 8)+clientkey, 'utf-8').digest("hex")

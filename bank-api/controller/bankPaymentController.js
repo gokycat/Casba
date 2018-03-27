@@ -6,7 +6,7 @@ var bankIT = require('../services/payment/bankIT')
 
 // RETURNS ALL THE USERS IN THE DATABASE
 router.post('/', function (req, res) {
-  bankIT.initiatePayment({firstName:req.body.first_name, lastName:req.body.last_name, emailAddress:req.body.email, accountNo:req.body.account_no, bankName:req.body.bank_name, amount:req.body.amount}, function (err, payments) {
+  bankIT.initiatePayment({firstName:req.body.first_name, lastName:req.body.last_name, emailAddress:req.body.email, accountNo:req.body.account_no, bankName:req.body.bank_name, amount:req.body.amount, description:req.body.description}, function (err, payments) {
     if (err) return res.status(500).send("There was a problem processing the transfer.");
     res.status(200).send(payments);
   });

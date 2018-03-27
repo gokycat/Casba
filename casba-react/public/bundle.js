@@ -24325,37 +24325,31 @@
 	        _this.setState({ transactions: message.transactions });
 	        _this.toggleMenu();
 	      } else if (message.tag == 'addAccount') {
-	        _this.setState({ inputType: 'number' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
 	        _this.setState({ transactions: message.transactions });
 	      } else if (message.tag == 'accountBank') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
 	        _this.setState({ transactions: message.transactions });
 	      } else if (message.tag == 'cardNumber') {
-	        _this.setState({ inputType: 'number' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
 	        _this.setState({ transactions: message.transactions });
 	      } else if (message.tag == 'addCardConfirm') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
 	        _this.setState({ transactions: message.transactions });
 	      } else if (message.tag == 'recipientAccount') {
-	        _this.setState({ inputType: 'number' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
 	        _this.setState({ transactions: message.transactions });
 	      } else if (message.tag == 'transferConfirmed') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ showReciept: true });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
@@ -24363,7 +24357,6 @@
 	        _this.setState({ transactions: message.transactions });
 	        _this.toggleMenu();
 	      } else if (message.tag == 'paymentConfirmed') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ showReciept: true });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
@@ -24371,7 +24364,6 @@
 	        _this.setState({ transactions: message.transactions });
 	        _this.toggleMenu();
 	      } else if (message.tag == 'topupConfirmed') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ showReciept: true });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
@@ -24379,13 +24371,11 @@
 	        _this.setState({ transactions: message.transactions });
 	        _this.toggleMenu();
 	      } else if (message.tag == 'transferNotResolved') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
 	        _this.setState({ transactions: message.transactions });
 	      } else if (message.tag == 'addAccountConfirmed') {
-	        _this.setState({ inputType: 'text' });
 	        _this.setState({ tag: message.tag });
 	        _this.setState({ user: message.user });
 	        _this.setState({ accounts: message.accounts });
@@ -32687,7 +32677,7 @@
 	  value: true
 	});
 	exports.default = {
-	  api: 'http://localhost:4008/'
+	  api: 'https://kira-node-dev.eu-gb.mybluemix.net'
 	};
 
 /***/ }),
@@ -32746,7 +32736,7 @@
 	    var _this = _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).call(this, props));
 	
 	    _this.infoClickHandler = _this.infoClickHandler.bind(_this);
-	    _this.accountInfoClickHandler = _this.accountInfoClickHandler.bind(_this);
+	    _this.accountClickHandler = _this.accountClickHandler.bind(_this);
 	    _this.confirmClickHandler = _this.confirmClickHandler.bind(_this);
 	    _this.declineClickHandler = _this.declineClickHandler.bind(_this);
 	    _this.accountClickHandler = _this.accountClickHandler.bind(_this);
@@ -32757,11 +32747,12 @@
 	    _this.transferClickHandler = _this.transferClickHandler.bind(_this);
 	    _this.topupClickHandler = _this.topupClickHandler.bind(_this);
 	    _this.telcoNameClickHandler = _this.telcoNameClickHandler.bind(_this);
-	    _this.payClickHandler = _this.payClickHandler.bind(_this);
 	    _this.monthClickHandler = _this.monthClickHandler.bind(_this);
 	    _this.billTypeClickHandler = _this.billTypeClickHandler.bind(_this);
 	    _this.vendorClickHandler = _this.vendorClickHandler.bind(_this);
 	    _this.vendorPackageClickHandler = _this.vendorClickHandler.bind(_this);
+	    _this.beneficiaryClickHandler = _this.beneficiaryClickHandler.bind(_this);
+	    _this.expenseTypeClickHandler = _this.expenseTypeClickHandler.bind(_this);
 	    return _this;
 	  }
 	
@@ -32771,12 +32762,22 @@
 	  _createClass(Messages, [{
 	    key: 'infoClickHandler',
 	    value: function infoClickHandler() {
-	      this.props.userInfoClickHandler('Show me my basic customer information');
+	      this.props.userInfoClickHandler('What is my account number');
 	    }
 	  }, {
-	    key: 'accountInfoClickHandler',
-	    value: function accountInfoClickHandler() {
-	      this.props.userInfoClickHandler('What is my account balance');
+	    key: 'transferClickHandler',
+	    value: function transferClickHandler() {
+	      this.props.userInfoClickHandler('I want to send some money');
+	    }
+	  }, {
+	    key: 'topupClickHandler',
+	    value: function topupClickHandler() {
+	      this.props.userInfoClickHandler('I would like to buy airtime');
+	    }
+	  }, {
+	    key: 'analyticsClickHandler',
+	    value: function analyticsClickHandler() {
+	      this.props.userInfoClickHandler('How much have I spent');
 	    }
 	  }, {
 	    key: 'confirmClickHandler',
@@ -32809,6 +32810,11 @@
 	      this.props.clickHandler(bankName[0].toUpperCase() + bankName.substring(1));
 	    }
 	  }, {
+	    key: 'beneficiaryClickHandler',
+	    value: function beneficiaryClickHandler(beneficiary) {
+	      this.props.clickHandler(beneficiary);
+	    }
+	  }, {
 	    key: 'telcoNameClickHandler',
 	    value: function telcoNameClickHandler(telcoName) {
 	      this.props.clickHandler(telcoName[0].toUpperCase() + telcoName.substring(1));
@@ -32839,19 +32845,9 @@
 	      this.props.clickHandler(billType);
 	    }
 	  }, {
-	    key: 'transferClickHandler',
-	    value: function transferClickHandler() {
-	      this.props.userInfoClickHandler('I want to send some money');
-	    }
-	  }, {
-	    key: 'topupClickHandler',
-	    value: function topupClickHandler() {
-	      this.props.userInfoClickHandler('I would like to buy airtime');
-	    }
-	  }, {
-	    key: 'payClickHandler',
-	    value: function payClickHandler() {
-	      this.props.userInfoClickHandler('I want to pay bill');
+	    key: 'expenseTypeClickHandler',
+	    value: function expenseTypeClickHandler(expenseType) {
+	      this.props.clickHandler(expenseType);
 	    }
 	
 	    //view
@@ -32863,7 +32859,7 @@
 	
 	      // Loop through all the messages in the state and create a Message component
 	      var messages = this.props.messages.map(function (message, i) {
-	        if (message.tag == 'begin') {
+	        if (message.tag == 'hello') {
 	          return _react2.default.createElement(
 	            'div',
 	            null,
@@ -32872,28 +32868,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Info', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
-	          );
-	        } else if (message.tag == 'hello') {
-	          return _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(_Message2.default, {
-	              key: i,
-	              user: _this2.props.user,
-	              message: message.message,
-	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Info', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler })
 	          );
 	        } else if (message.tag == 'noAccount') {
 	          return _react2.default.createElement(
@@ -32926,12 +32905,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Info', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'userInfo') {
 	          return _react2.default.createElement(
@@ -32942,11 +32919,25 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
+	          );
+	        } else if (message.tag == 'transferDescription') {
+	          return _react2.default.createElement(
+	            'div',
+	            null,
+	            _react2.default.createElement(_Message2.default, {
+	              key: i,
+	              user: _this2.props.user,
+	              message: message.message,
+	              fromMe: message.fromMe }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Housing', click: _this2.expenseTypeClickHandler.bind(_this2, 'Housing') }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Food', click: _this2.expenseTypeClickHandler.bind(_this2, 'Food') }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Transport', click: _this2.expenseTypeClickHandler.bind(_this2, 'Transport') }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Entertainment', click: _this2.expenseTypeClickHandler.bind(_this2, 'Entertainment') }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Loan', click: _this2.expenseTypeClickHandler.bind(_this2, 'Loan') })
 	          );
 	        } else if (message.tag == 'viewAccount') {
 	          return _react2.default.createElement(
@@ -32986,6 +32977,27 @@
 	                  'button',
 	                  { key: i, className: 'btn btn-default bank-btn ' + account.BANK_NAME, onClick: _this2.bankNameClickHandler.bind(_this2, account.ACCOUNT_NO) },
 	                  account.ACCOUNT_NO
+	                );
+	              })
+	            )
+	          );
+	        } else if (message.tag == 'recipientAccount') {
+	          return _react2.default.createElement(
+	            'div',
+	            null,
+	            _react2.default.createElement(_Message2.default, {
+	              key: i,
+	              user: _this2.props.user,
+	              message: message.message,
+	              fromMe: message.fromMe }),
+	            _react2.default.createElement(
+	              'div',
+	              null,
+	              message.beneficiaries.map(function (beneficiary, i) {
+	                return _react2.default.createElement(
+	                  'button',
+	                  { key: i, className: 'btn btn-default bank-btn ' + beneficiary.BANK_NAME, onClick: _this2.beneficiaryClickHandler.bind(_this2, beneficiary.ACCOUNT_NO) },
+	                  beneficiary.NAME
 	                );
 	              })
 	            )
@@ -33042,11 +33054,10 @@
 	              message: message.message,
 	              fromMe: message.fromMe }),
 	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'accountBank') {
 	          return _react2.default.createElement(
@@ -33095,7 +33106,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'transferNotResolved') {
 	          return _react2.default.createElement(
@@ -33106,8 +33121,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'User', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Account', click: _this2.accountInfoClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'topupNotResolved') {
 	          return _react2.default.createElement(
@@ -33118,8 +33135,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'User', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Account', click: _this2.accountInfoClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'cardNotResolved') {
 	          return _react2.default.createElement(
@@ -33130,7 +33149,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add card', click: _this2.addAccountClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add card', click: _this2.addAccountClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'resetPasswordConfirm') {
 	          return _react2.default.createElement(
@@ -33237,7 +33260,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'paymentDeclined') {
 	          return _react2.default.createElement(
@@ -33248,7 +33275,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'addCardDeclined') {
 	          return _react2.default.createElement(
@@ -33259,7 +33290,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add card', click: _this2.addCardClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add card', click: _this2.addCardClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'deleteAccountConfirmed') {
 	          return _react2.default.createElement(
@@ -33270,7 +33305,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add account', click: _this2.addAccountClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'deleteCardConfirmed') {
 	          return _react2.default.createElement(
@@ -33281,7 +33320,11 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Add card', click: _this2.addCardClickHandler })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Add card', click: _this2.addCardClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'addAccountConfirmed') {
 	          return _react2.default.createElement(
@@ -33293,11 +33336,10 @@
 	              message: message.message,
 	              fromMe: message.fromMe }),
 	            _react2.default.createElement(_Button2.default, { btnValue: 'Add Card', click: _this2.addCardClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'transferConfirmed') {
 	          return _react2.default.createElement(
@@ -33308,26 +33350,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
-	          );
-	        } else if (message.tag == 'transferConfirmed') {
-	          return _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(_Message2.default, {
-	              key: i,
-	              user: _this2.props.user,
-	              message: message.message,
-	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'topupConfirmed') {
 	          return _react2.default.createElement(
@@ -33338,11 +33364,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'transferDeclined') {
 	          return _react2.default.createElement(
@@ -33353,11 +33378,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'topupDeclined') {
 	          return _react2.default.createElement(
@@ -33368,11 +33392,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'addCardConfirmed') {
 	          return _react2.default.createElement(
@@ -33383,11 +33406,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'deleteAccountDeclined') {
 	          return _react2.default.createElement(
@@ -33398,12 +33420,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Info', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'deleteCardDeclined') {
 	          return _react2.default.createElement(
@@ -33414,12 +33434,10 @@
 	              user: _this2.props.user,
 	              message: message.message,
 	              fromMe: message.fromMe }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Info', click: _this2.infoClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Bills', click: _this2.payClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime', click: _this2.topupClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Transfer', click: _this2.transferClickHandler }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Locate' }),
-	            _react2.default.createElement(_Button2.default, { btnValue: 'Budget' })
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Account Info', click: _this2.infoClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Fund Transfer', click: _this2.transferClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Airtime Topup', click: _this2.topupClickHandler }),
+	            _react2.default.createElement(_Button2.default, { btnValue: 'Expense Manager', click: _this2.analtyicsClickHandler })
 	          );
 	        } else if (message.tag == 'expiryMonth') {
 	          return _react2.default.createElement(
@@ -54624,7 +54642,7 @@
 	      return _react2.default.createElement(
 	        'form',
 	        { className: 'chat-input form-group', onSubmit: this.submitHandler },
-	        _react2.default.createElement('input', { type: this.props.inputType,
+	        _react2.default.createElement('input', { type: 'text',
 	          onChange: this.textChangeHandler,
 	          className: 'form-control form-control-lg input-lg',
 	          value: this.state.chatInput,
@@ -57421,7 +57439,7 @@
 	                      { className: 'col-md-12' },
 	                      _react2.default.createElement(
 	                        'p',
-	                        null,
+	                        { className: 'newWall-title text-left' },
 	                        'Bank'
 	                      ),
 	                      _react2.default.createElement(
@@ -59773,7 +59791,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".container {\n  font-family: 'Roboto', sans-serif;\n  display: flex;\n  flex-direction: column;\n  height: 100vh;\n  width: 100vw;\n}\n\n\n/*Header styles*/\n.header {\n  padding: 20px 0;\n  margin: 0;\n  border-bottom: 1px solid #ddd;\n  background-color: #eee;\n  min-height: 100px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n justify-content: space-between;\n  display: flex;\n  -webkit-box-align: center;\n  -ms-flex-align: center;\n  align-items: center;\n  padding: 0 20px;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n}\n\n.header img {\n  width: 50px;\n  height: 50px;\n}\n\n.profile {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.profile img {\n  width: 80px;\n  height: 80px\n}\n\n.profileInfo {\n  display: column;\n}\n\n/******************/\n\n.messages {\n  overflow-y: scroll;\n  overflow-x: hidden;\n  flex-grow: 1;\n  padding: 20px;\n}\n\n.chat-input {\n  position: relative;\n  overflow: hidden;\n  padding: 0 40px;\n  flex-shrink: 0;\n}\n\n.chat-input input[type=\"text\"] {\n  width: 100%;\n\n}\n\n.message.from-me .username {\n  display: none;\n}\n\n.message.from-me {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.message.from-me .message-body {\n  background-color: #af9570;\n  color: white;\n}\n\n.message {\n  width: 100%;\n  display: flex;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  padding: 0;\n  margin: 25px 0;\n  font-size: .85em;\n}\n\n.message-body {\n  max-width: 40%;\n  word-wrap: break-word;\n  height: auto;\n  position: relative;\n  padding: 1em 1em 1em 1em;\n  line-height: 1.8rem;\n  border-radius: 15px;\n  background-color: #eee;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n}\n\n.message-attachment {\n  max-width: 80%;\n  display: block;\n  padding: 20px;\n  border: 1px;\n  border-radius: 5px;\n  padding-right: 50px;\n}\n\n.message-btn {\n  margin: 5px;\n}\n\n.bank-btn {\n  margin: 5px;\n  color: #fff;\n}\n\n.message-time {\n  padding: 7px;\n  margin: 7px;\n}\n\n.username {\n  font-weight: bold;\n  font-size: 0.9rem;\n  color: #999;\n  margin-bottom: 5px;\n}\n\n.username img {\n  width: 30px;\n  height: 30px;\n  margin: 2px;\n}\n\n/*.Login form .text-center input {\n  margin: 10px;\n}*/\n\n/*Overlay*/\n.Overlay {\n  position: absolute;\n  padding: 10px;\n  right: 0;\n  height: 100vh;\n  display: block;\n  overflow-y: scroll;\n  width: 40%;\n  /*opacity: 10%;*/\n  z-index: 1;\n  transition: .5s ease;\n  background: linear-gradient(rgba(238, 238, 238, 1), rgba(216, 216, 216, 1)) no-repeat center;\n}\n\n.show {\n  display: block;\n}\n\n.hidden {\n  display: none;\n}\n.generalDetails {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  padding: 10px;\n}\n\n/* UserDetails on Overlay */\n\n.userAvatar img {\n  width: 30px;\n  height: 30px;\n}\n\n/* Cards */\n\n.cardWall {\n  height: auto;\n  width: 100%;\n  background-color: #ffffff;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin: auto;\n}\n\n.section-title {\n  float: right;\n}\n\n.cardFrame {\n  height: auto;\n  width: 100%;\n  color: #fff;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  margin: auto;\n}\n\n.recieptWall {\n  height: auto;\n  width: 100%;\n  background-color: #dadada;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin-top: 20px;\n}\n\n.reciept-time {\n  float: right;\n  font-size: 1em;\n  color: #000000;\n\n}\n\n.reciept {\n  height: auto;\n  width: 100%;\n  color: #fff;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  margin: auto;\n}\n\n.reciept-body {\n  background-color: #128c7e;\n  color: #fff;\n  margin-top: 10px;\n  padding: 10px 20px 10px 20px;\n}\n\n.reciept-row {\n  margin-top: 10px;\n}\n\n.reciept-questions {\n  text-align: left;\n}\n\n.reciept-answers {\n  text-align: right;\n}\n\n.reciept-image-div{\n  height: 100px;\n  background-color: #fff;\n}\n.reciept-image-div img {\n  height: 80px;\n  width: 80px;\n}\n.spend {\n  font-size: 40px;\n  line-height: 1.38105;\n  font-weight: 600;\n  letter-spacing: .011em;\n}\n\n\n\n/*Colour Code for all Major Banks in Nigeria*/\n\n.access {\n  background-color: #EE7E01;\n}\n\n.citi {\n  background-color: #056DAE;\n}\n\n.diamond {\n  background-color: #059DA2;\n}\n\n.ecobank {\n  background-color: #0082bb;\n}\n\n.enterprise {\n  background-color: #FBDE00;\n}\n\n.fidelity {\n  background-color: #A0CE4E;\n}\n\n.first {\n  background-color: #022e64;\n}\n\n.fcmb {\n  background-color: #5c2584;\n}\n\n.gtb {\n  background-color: #dd4f05;\n}\n\n.heritage {\n  background-color: #4fc143;\n}\n\n.keystone {\n  background-color: #102b5b;\n}\n\n.mainstreet {\n  background-color: #9F038A;\n}\n\n\n.providus {\n  background-color: #FDBA13;\n}\n\n.skye {\n  background-color: #1D4063;\n}\n\n.stanbic {\n  background-color: #0396fd;\n}\n\n.standard {\n  background-color: #22aa48;\n}\n\n.sterling {\n  background-color: #ad161f;\n}\n\n.unity {\n  background-color: #97be0d;\n}\n\n.union {\n  background-color: #0FBCF5;\n}\n\n.uba {\n  background-color: #d20f05;\n}\n\n.wema {\n  background-color: #9c1b88;\n}\n\n.zenith {\n  background-color: #e3000f;\n}\n\n/*Colour Code for all Major Banks in Nigeria*/\n\n\n\n.userInfo {\n\n}\n.cardWall form {\n  margin-bottom: 20px;\n}\n.cardPin {\n  margin-top: 10px;\n  margin-bottom: 20px;\n}\n\n.newWall {\n  height: auto;\n  width: auto;\n  background-color: #ffffff;\n  padding: auto;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin-bottom: 10px;\n}\n\n.balance {\n  height: auto;\n}\n\n.newWallBalance {\n  height: 100%;\n  width: auto;\n  background-color: #ffffff;\n  padding: auto;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin-left: 10px;\n}\n\n.cardInfo {\n  padding: 5px  10px 5px 10px;\n  margin-top: 40px;\n  margin-bottom: 40px;\n}\n\n.cardInfo input {\n  margin-top: 10px;\n}\n/* Preference */\n\n.preference {\n  margin-top: 30px;\n}\n\nlabel {\n  color: #fff;\n}\n/* Carousel */\n/* --------------------------------------------------------- */\n\n.carousel {\n  margin-top: 40px;\n}\n.carousel .slide {\n  background: transparent !important;\n}\n\n.carousel .control-dots {\n    margin-top: 20px !important;\n}\n\n.carousel .control-dots .dot {\n    background: #128c7e !important;\n}\n\n.feature-carousel {\n  display: none;\n}\n\n/* --------------------------------------------------------- */\n\n\n/* Media Queries */\n\n@media only screen and (max-width: 992px) {\n  .Overlay {\n    width: 100%;\n  }\n}\n\n@media only screen and (min-width: 320px) and (max-width: 800px) {\n  .container {\n    padding-right: 0px !important;\n    padding-left: 0px !important;\n  }\n  .message {\n    margin: 15px 0;\n    font-size: .8em;\n\n  }\n\n  .spend {\n    font-size: 52px;\n  }\n\n  .message-body {\n    max-width: 80%;\n    word-wrap: break-word;\n    padding: 1em 1em 1em 1em;\n    height: auto;\n  }\n\n  .no-carousel {\n    display: none;\n  }\n  .feature-carousel {\n    display: block;\n    margin-bottom: 30px;\n  }\n}\n", ""]);
+	exports.push([module.id, ".container {\n  font-family: 'Roboto', sans-serif;\n  display: flex;\n  flex-direction: column;\n  height: 100vh;\n  width: 100vw;\n}\n\n\n/*Header styles*/\n.header {\n  padding: 20px 0;\n  margin: 0;\n  border-bottom: 1px solid #ddd;\n  background-color: #eee;\n  min-height: 100px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n justify-content: space-between;\n  display: flex;\n  -webkit-box-align: center;\n  -ms-flex-align: center;\n  align-items: center;\n  padding: 0 20px;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n}\n\n.header img {\n  width: 50px;\n  height: 50px;\n}\n\n.profile {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.profile img {\n  width: 80px;\n  height: 80px\n}\n\n.profileInfo {\n  display: column;\n}\n\n/******************/\n\n.messages {\n  overflow-y: scroll;\n  overflow-x: hidden;\n  flex-grow: 1;\n  padding: 20px;\n}\n\n.chat-input {\n  position: relative;\n  overflow: hidden;\n  padding: 0 40px;\n  flex-shrink: 0;\n}\n\n.chat-input input[type=\"text\"] {\n  width: 100%;\n\n}\n\n.message.from-me .username {\n  display: none;\n}\n\n.message.from-me {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.message.from-me .message-body {\n  background-color: #af9570;\n  color: white;\n}\n\n.message {\n  width: 100%;\n  display: flex;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  padding: 0;\n  margin: 25px 0;\n  font-size: .85em;\n}\n\n.message-body {\n  max-width: 40%;\n  word-wrap: break-word;\n  height: auto;\n  position: relative;\n  padding: 1em 1em 1em 1em;\n  line-height: 1.8rem;\n  border-radius: 15px;\n  background-color: #eee;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n}\n\n.message-attachment {\n  max-width: 80%;\n  display: block;\n  padding: 20px;\n  border: 1px;\n  border-radius: 5px;\n  padding-right: 50px;\n}\n\n.message-btn {\n  margin: 5px;\n}\n\n.bank-btn {\n  margin: 5px;\n  color: #fff;\n}\n\n.message-time {\n  padding: 7px;\n  margin: 7px;\n}\n\n.username {\n  font-weight: bold;\n  font-size: 0.9rem;\n  color: #999;\n  margin-bottom: 5px;\n}\n\n.username img {\n  width: 30px;\n  height: 30px;\n  margin: 2px;\n}\n\n/*.Login form .text-center input {\n  margin: 10px;\n}*/\n\n/*Overlay*/\n.Overlay {\n  position: absolute;\n  padding: 10px;\n  right: 0;\n  height: 100vh;\n  display: block;\n  overflow-y: scroll;\n  width: 40%;\n  /*opacity: 10%;*/\n  z-index: 1;\n  transition: .5s ease;\n  background: linear-gradient(rgba(238, 238, 238, 1), rgba(216, 216, 216, 1)) no-repeat center;\n}\n\n.show {\n  display: block;\n}\n\n.hidden {\n  display: none;\n}\n.generalDetails {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  padding: 10px;\n}\n\n/* UserDetails on Overlay */\n\n.userAvatar img {\n  width: 30px;\n  height: 30px;\n}\n\n/* Cards */\n\n.cardWall {\n  height: auto;\n  width: 100%;\n  background-color: #ffffff;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin: auto;\n}\n\n.section-title {\n  float: right;\n}\n\n.cardFrame {\n  height: auto;\n  width: 100%;\n  color: #fff;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  margin: auto;\n}\n\n.recieptWall {\n  height: auto;\n  width: 100%;\n  background-color: #dadada;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin-top: 20px;\n}\n\n.reciept-time {\n  float: right;\n  font-size: 1em;\n  color: #000000;\n\n}\n\n.reciept {\n  height: auto;\n  width: 100%;\n  color: #fff;\n  /*border-radius: 30px;*/\n  padding: 10px 20px 10px 20px;\n  margin: auto;\n}\n\n.reciept-body {\n  background-color: #128c7e;\n  color: #fff;\n  margin-top: 10px;\n  padding: 10px 20px 10px 20px;\n}\n\n.reciept-row {\n  margin-top: 10px;\n}\n\n.reciept-questions {\n  text-align: left;\n}\n\n.reciept-answers {\n  text-align: right;\n}\n\n.reciept-image-div{\n  height: 100px;\n  background-color: #fff;\n}\n.reciept-image-div img {\n  height: 80px;\n  width: 80px;\n}\n.spend {\n  font-size: 40px;\n  line-height: 1.38105;\n  font-weight: 600;\n  letter-spacing: .011em;\n}\n\n\n\n/*Colour Code for all Major Banks in Nigeria*/\n\n.access {\n  background-color: #EE7E01;\n}\n\n.citi {\n  background-color: #056DAE;\n}\n\n.diamond {\n  background-color: #059DA2;\n}\n\n.ecobank {\n  background-color: #0082bb;\n}\n\n.enterprise {\n  background-color: #FBDE00;\n}\n\n.fidelity {\n  background-color: #A0CE4E;\n}\n\n.first {\n  background-color: #022e64;\n}\n\n.fcmb {\n  background-color: #5c2584;\n}\n\n.gtb {\n  background-color: #dd4f05;\n}\n\n.heritage {\n  background-color: #4fc143;\n}\n\n.keystone {\n  background-color: #102b5b;\n}\n\n.mainstreet {\n  background-color: #9F038A;\n}\n\n\n.providus {\n  background-color: #FDBA13;\n}\n\n.skye {\n  background-color: #1D4063;\n}\n\n.stanbic {\n  background-color: #0396fd;\n}\n\n.standard {\n  background-color: #22aa48;\n}\n\n.sterling {\n  background-color: #ad161f;\n}\n\n.unity {\n  background-color: #97be0d;\n}\n\n.union {\n  background-color: #0FBCF5;\n}\n\n.uba {\n  background-color: #d20f05;\n}\n\n.wema {\n  background-color: #9c1b88;\n}\n\n.zenith {\n  background-color: #e3000f;\n}\n\n/*Colour Code for all Major Banks in Nigeria*/\n\n\n\n.userInfo {\n\n}\n.cardWall form {\n  margin-bottom: 20px;\n}\n.cardPin {\n  margin-top: 10px;\n  margin-bottom: 20px;\n}\n\n.newWall {\n  height: auto;\n  width: auto;\n  background-color: #ffffff;\n  padding: auto;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin: 20px 10px;\n}\n\n.newWall-title {\n  background-color: #ffffff;\n  margin: 5px;\n  font-size: 12px;\n}\n\n.balance {\n  height: auto;\n}\n\n.newWallBalance {\n  height: 100%;\n  width: auto;\n  background-color: #ffffff;\n  padding: auto;\n  border: 1px solid #ddd;\n  box-shadow: 0 7px 20px 3px rgba(0,0,0,.3);\n  margin: 20px 10px 20px 20px;\n}\n\n.cardInfo {\n  padding: 5px  10px 5px 10px;\n  margin: 40px 20px;;\n}\n\n.cardInfo input {\n  margin-top: 10px;\n}\n/* Preference */\n\n.preference {\n  margin-top: 30px;\n}\n\nlabel {\n  color: #fff;\n}\n/* Carousel */\n/* --------------------------------------------------------- */\n\n.carousel {\n  margin-top: 40px;\n}\n.carousel .slide {\n  background: transparent !important;\n}\n\n.carousel .control-dots {\n    margin-top: 20px !important;\n}\n\n.carousel .control-dots .dot {\n    background: #128c7e !important;\n}\n\n.feature-carousel {\n  display: none;\n}\n\n/* --------------------------------------------------------- */\n\n\n/* Media Queries */\n\n@media only screen and (max-width: 992px) {\n  .Overlay {\n    width: 100%;\n  }\n}\n\n@media only screen and (min-width: 320px) and (max-width: 800px) {\n  .container {\n    padding-right: 0px !important;\n    padding-left: 0px !important;\n  }\n  .message {\n    margin: 15px 0;\n    font-size: .8em;\n\n  }\n\n  .spend {\n    font-size: 52px;\n  }\n\n  .message-body {\n    max-width: 80%;\n    word-wrap: break-word;\n    padding: 1em 1em 1em 1em;\n    height: auto;\n  }\n\n  .no-carousel {\n    display: none;\n  }\n  .feature-carousel {\n    display: block;\n    margin-bottom: 30px;\n  }\n}\n", ""]);
 	
 	// exports
 
@@ -88855,12 +88873,21 @@
 	                  type: 'text',
 	                  className: 'form-control',
 	                  onChange: this.props.setBVN,
-	                  placeholder: 'BVN..... you can dial *565*0# to confirm',
+	                  placeholder: 'Bank Verification Number (BVN)',
 	                  title: 'Check your BVN by dialing *565*0# on your mobile phone',
 	                  minLength: '11',
 	                  maxLength: '11',
 	                  pattern: '\\d{11}',
 	                  required: true })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { id: 'inputHelp' },
+	                _react2.default.createElement(
+	                  'small',
+	                  { className: 'form-text text-muted' },
+	                  'Check your BVN by dialing *565*0# on your mobile phone.'
+	                )
 	              )
 	            ),
 	            _react2.default.createElement('hr', null),
@@ -88922,6 +88949,15 @@
 	                  pattern: '\\d{11}',
 	                  placeholder: 'Phone',
 	                  required: true })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { id: 'inputHelp' },
+	                _react2.default.createElement(
+	                  'small',
+	                  { className: 'form-text text-muted' },
+	                  'This should be the phone number registered with your BVN.'
+	                )
 	              )
 	            ),
 	            _react2.default.createElement(
@@ -88941,6 +88977,15 @@
 	                  onChange: this.props.setEmail,
 	                  placeholder: 'Email',
 	                  required: true })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { id: 'inputHelp' },
+	                _react2.default.createElement(
+	                  'small',
+	                  { className: 'form-text text-muted' },
+	                  'This should be the email you want to receive notifications.'
+	                )
 	              )
 	            ),
 	            _react2.default.createElement('hr', null),
@@ -88962,6 +89007,15 @@
 	                  'div',
 	                  { className: 'input-group-addon' },
 	                  _react2.default.createElement('a', { onClick: this.toggleVisibility, className: 'glyphicon glyphicon-eye-open' })
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { id: 'inputHelp' },
+	                _react2.default.createElement(
+	                  'small',
+	                  { className: 'form-text text-muted' },
+	                  'Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters.'
 	                )
 	              )
 	            )

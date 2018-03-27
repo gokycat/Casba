@@ -36,14 +36,14 @@ const kira = watson.conversation({
 });
 const WorkspaceID = process.env.WORKSPACE_ID
 
-var tag = '...'
-var context = {}
 var responseText = ''
+var context = {}
+var tag = '...'
 
 // setup banking services
 const request = require('request');
 var querystring = require('querystring');
-var bank = 'http://localhost:5500'
+var bank = 'https://bank-api-dev.eu-gb.mybluemix.net'
 var user, accounts, transactions = []
 
 // Allow CORS
@@ -237,6 +237,8 @@ socketIo.on('connection', socket => {
           tag="false"
           socket.emit('server:registration', {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag});
         }
+        user = JSON.parse(User)
+        //To-do: Send email notification
       });
     }
   });
@@ -269,7 +271,7 @@ socketIo.on('connection', socket => {
         socket.emit('server:authentication', {username: 'Kira', message: 'Sorry, you are not a registered user', tag:tag});
       }
       else {
-        if(user[0].STATUS_ID == 2){
+        if(user[0].STATUS_ID == 2 || user[0].STATUS_ID == 4){
           if (data.password == user[0].PASSWORD) {
             // ====== Update with latest signin time ====
             var form = {
@@ -442,6 +444,7 @@ socketIo.on('connection', socket => {
                   }
                   else {
                     responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                   }
                 });
@@ -469,6 +472,7 @@ socketIo.on('connection', socket => {
                   }
                   accounts = JSON.parse(Accounts)
                   responseText = response.output.text
+                  context = {}
                   socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                 });
               }
@@ -510,6 +514,7 @@ socketIo.on('connection', socket => {
                     }
                     transactions = JSON.parse(Transactions)
                     responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
                   });
                 });
@@ -654,6 +659,60 @@ socketIo.on('connection', socket => {
                 socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user});
               }
             }
+            else if (tag == "fundsTransfer"){
+              if (intent.confidence >= 0.5) {
+                const options = {
+                    url: bank+"/user/account",
+                    method: 'GET',
+                    headers: {
+                        'bvn': user[0].BVN
+                    }
+                };
+                request(options, function(err, res, Accounts) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  accounts = JSON.parse(Accounts)
+                  responseText = response.output.text
+                  context = response.context;
+                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                });
+              }
+              else {
+                responseText = 'I did not understand your intent. Please can type in your request again.';
+                socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user});
+              }
+            }
+            else if (tag == "airtimeTopup"){
+              if (intent.confidence >= 0.5) {
+                const options = {
+                    url: bank+"/user/account",
+                    method: 'GET',
+                    headers: {
+                        'bvn': user[0].BVN
+                    }
+                };
+                request(options, function(err, res, Accounts) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  accounts = JSON.parse(Accounts)
+                  responseText = response.output.text
+                  context = response.context;
+                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                });
+              }
+              else {
+                responseText = 'I did not understand your intent. Please can type in your request again.';
+                socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user});
+              }
+            }
             else {
               responseText = response.output.text
               socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user});
@@ -661,7 +720,7 @@ socketIo.on('connection', socket => {
           }
           else if (response.entities && response.entities[0]) {
             var entity = response.entities[0];
-            if(entity.entity == 'sys-number'){
+            if (entity.entity == 'sys-number') {
               var node = response.output.nodes_visited[0]
               if (node == 'slot_15_1512736644141') {
                 tag = 'accountInfo'
@@ -696,6 +755,7 @@ socketIo.on('connection', socket => {
                     }
                     transactions = JSON.parse(Transactions)
                     responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
                   });
                 });
@@ -839,6 +899,7 @@ socketIo.on('connection', socket => {
                           }
                           tag = 'accountNotResolved'
                           responseText = "It seems the card does not link to the account selected. Please try to add the card again"
+                          context = {}
                           socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                         });
                       }
@@ -861,6 +922,7 @@ socketIo.on('connection', socket => {
                       }
                       tag = 'accountNotResolved'
                       responseText = "Sorry, something went wrong with the card resolution"
+                      context = {}
                       socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                     });
                   }
@@ -927,6 +989,503 @@ socketIo.on('connection', socket => {
                   responseText = response.output.text
                   context = response.context;
                   socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                });
+              }
+              else if (node == 'slot_106_1512391553012') {
+                tag = 'recipientBank'
+                const options = {
+                    url: bank+"/bank",
+                    method: 'GET'
+                };
+                request(options, function(err, res, Banks) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var banks = JSON.parse(Banks)
+                  const options = {
+                      url: bank+"/user/account",
+                      method: 'GET',
+                      headers: {
+                          'bvn': user[0].BVN
+                      }
+                  };
+                  request(options, function(err, res, Accounts) {
+                    if (err) {
+                      console.log('error:', err)
+                      // error handling
+                      tag="false"
+                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                    }
+                    accounts = JSON.parse(Accounts)
+                    responseText = response.output.text
+                    context = response.context;
+                    socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, banks:banks});
+                  });
+                });
+              }
+              else if (node == 'slot_112_1512392084478') {
+                tag = 'transferAmount'
+                const options = {
+                    url: bank+"/beneficiary/recipient",
+                    method: 'GET',
+                    headers: {
+                        'account_no': response.context.recipientAccount
+                    }
+                };
+                request(options, function(err, res, Beneficiaries) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var beneficiaries = JSON.parse(Beneficiaries)
+                  if (beneficiaries.length == 0) {
+                    var form = {
+                      account_no: response.context.recipientAccount,
+                      bank_name: response.context.recipientBank
+                    };
+
+                    var formData = querystring.stringify(form);
+                    var contentLength = formData.length;
+
+                    const options = {
+                      url: bank+"/kyc/account",
+                      headers: {
+                        'Content-Length': contentLength,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      },
+                      body: formData,
+                      method: 'POST'
+                    };
+                    request(options, function(err, res, BeneficiaryDetails) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      var beneficiaryDetails = JSON.parse(BeneficiaryDetails)
+                      response.context['recipientName'] = beneficiaryDetails.data.account_name
+                      var form = {
+                        recipient_no: response.context.recipientAccount,
+                        full_name: response.context.recipientName,
+                        bank_name: response.context.recipientBank,
+                        account_no: response.context.accountNo
+                      };
+
+                      var formData = querystring.stringify(form);
+                      var contentLength = formData.length;
+
+                      const options = {
+                        url: bank+"/beneficiary",
+                        headers: {
+                          'Content-Length': contentLength,
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData,
+                        method: 'POST'
+                      };
+                      request(options, function(err, res, AddBeneficiaryStatus) {
+                        if (err) {
+                          console.log('error:', err)
+                          // error handling
+                          tag="false"
+                          socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                        }
+                        var addBeneficiaryStatus = JSON.parse(AddBeneficiaryStatus)
+                        console.log(addBeneficiaryStatus)
+                        if (addBeneficiaryStatus[0].status != 'Error') {
+                          const options = {
+                              url: bank+"/user/account",
+                              method: 'GET',
+                              headers: {
+                                  'bvn': user[0].BVN
+                              }
+                          };
+                          request(options, function(err, res, Accounts) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            accounts = JSON.parse(Accounts)
+                            responseText = response.output.text
+                            context = response.context;
+                            socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                          });
+                        }
+                        else {
+                          tag = 'addAccountDeclined'
+                          const options = {
+                              url: bank+"/user/account",
+                              method: 'GET',
+                              headers: {
+                                  'bvn': user[0].BVN
+                              }
+                          };
+                          request(options, function(err, res, Accounts) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            accounts = JSON.parse(Accounts)
+                            responseText = user[0].FIRST_NAME + ' I was unable to add ' + recipient.context.recipientName + ' as a beneficiary. But do not worry, go ahead and give the amount to transfer.'
+                            context = response.context;
+                            socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                          });
+                        }
+                      });
+                    });
+                  }
+                  else {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = response.output.text
+                      context = response.context;
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                });
+              }
+              else if (node == 'slot_118_1512392222714') {
+                tag = 'transferDescription'
+                const options = {
+                    url: bank+"/user/account",
+                    method: 'GET',
+                    headers: {
+                        'bvn': user[0].BVN
+                    }
+                };
+                request(options, function(err, res, Accounts) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  accounts = JSON.parse(Accounts)
+                  responseText = response.output.text
+                  context = response.context;
+                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                });
+              }
+              else if (node == 'slot_42_1517395273138') {
+                tag = 'transferConfirm'
+                const options = {
+                    url: bank+"/wallet/balance",
+                    method: 'GET',
+                    headers: {
+                        'amount': response.context.transferAmount
+                    }
+                };
+                request(options, function(err, res, BalanceStatus) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var balanceStatus = JSON.parse(BalanceStatus)
+                  if (balanceStatus[0] == "0") {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = response.output.text
+                      context = response.context;
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                  else {
+                    tag = 'transferDecline'
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = user[0].FIRST_NAME + ' Your transfer could not be completed at this time! If you have been debited, a refund will happen within 24 hrs.'
+                      context = {};
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                });
+              }
+              else if (node == 'slot_3_1518767220139') {
+                tag = 'topupPhone'
+                const options = {
+                    url: bank+"/user/account",
+                    method: 'GET',
+                    headers: {
+                        'bvn': user[0].BVN
+                    }
+                };
+                request(options, function(err, res, Accounts) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  accounts = JSON.parse(Accounts)
+                  responseText = response.output.text
+                  context = response.context;
+                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                });
+              }
+              else if (node == 'slot_11_1518767521877') {
+                tag = 'topupAmount'
+                var form = {
+                  phone: response.context.topupPhone
+                };
+
+                var formData = querystring.stringify(form);
+                var contentLength = formData.length;
+
+                const options = {
+                  url: bank+"/kyc/phone",
+                  headers: {
+                    'Content-Length': contentLength,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  },
+                  body: formData,
+                  method: 'POST'
+                };
+                request(options, function(err, res, PhoneDetails) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var phoneDetails = JSON.parse(PhoneDetails)
+                  if (phoneDetails.valid) {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = response.output.text
+                      response.context['telcoName'] = phoneDetails.carrier.split(" ")[0].toLowerCase()
+                      context = response.context;
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                  else {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = user[0].FIRST_NAME + ' the phone number you have provided is not valid and registered under any carrier.'
+                      context = {}
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                });
+              }
+              else if (node == 'slot_14_1518767604056') {
+                tag = 'OTPTopup'
+                for (let i = 0; i < accounts.length; i++) {
+                  if (accounts[i].ACCOUNT_NO == response.context.accountNo) {
+                    response.context['bankName'] = accounts[i].BANK_NAME;
+                    response.context['totalSpend'] = accounts[i].SPEND;
+                  }
+                }
+                var form = {
+                  first_name: user[0].FIRST_NAME,
+                  last_name: user[0].LAST_NAME,
+                  email: user[0].EMAIL,
+                  account_no: response.context.accountNo,
+                  bank_name: response.context.bankName,
+                  amount: response.context.topupAmount,
+                  description: 'Airtime Topup'
+                };
+
+                var formData = querystring.stringify(form);
+                var contentLength = formData.length;
+
+                const options = {
+                  url: bank+"/bank/topup",
+                  headers: {
+                    'Content-Length': contentLength,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  },
+                  body: formData,
+                  method: 'POST'
+                };
+                request(options, function(err, res, InitiateTopup) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var initiateTopup = JSON.parse(InitiateTopup)
+                  response.context['bankIT'] = initiateTopup[1];
+                  if (initiateTopup[0].status != 'Error') {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = response.output.text
+                      context = response.context;
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  } else {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = initiateTopup[1].response
+                      context = {};
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                });
+              }
+              else if (node == 'slot_17_1518767683964') {
+                tag = 'topupConfirm'
+                const options = {
+                    url: bank+"/wallet/balance",
+                    method: 'GET',
+                    headers: {
+                        'amount': response.context.topupAmount
+                    }
+                };
+                request(options, function(err, res, BalanceStatus) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var balanceStatus = JSON.parse(BalanceStatus)
+                  if (balanceStatus[0] == "0") {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = response.output.text
+                      context = response.context;
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
+                  else {
+                    tag = 'topupDecline'
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = user[0].FIRST_NAME + ' Your topup could not be completed at this time! If you have been debited, a refund will happen within 24 hrs.'
+                      context = {};
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
                 });
               }
               else {
@@ -1015,6 +1574,7 @@ socketIo.on('connection', socket => {
                         }
                         tag = 'accountNotResolved'
                         responseText = "Sorry, something went wrong with the account resolution"
+                        context = {};
                         socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                       });
                     }
@@ -1036,11 +1596,57 @@ socketIo.on('connection', socket => {
                       }
                       tag = 'accountNotResolved'
                       responseText = "Sorry, something went wrong with the account resolution"
+                      context = {};
                       socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                     });
                   }
                 });
-              } else {
+              }
+              else if (node == 'slot_109_1512391635867') {
+                tag = 'recipientAccount'
+                const options = {
+                    url: bank+"/beneficiary",
+                    method: 'GET',
+                    headers: {
+                        'account_no': response.context.accountNo
+                    }
+                };
+                request(options, function(err, res, Beneficiaries) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var beneFiciaries = JSON.parse(Beneficiaries)
+                  var beneficiaries = []
+                  for(var i=0; i<beneFiciaries.length; i++) {
+                    if (beneFiciaries[i].BANK_NAME == response.context.recipientBank) {
+                      beneficiaries.push(beneFiciaries[i])
+                    }
+                  }
+                  const options = {
+                      url: bank+"/user/account",
+                      method: 'GET',
+                      headers: {
+                          'bvn': user[0].BVN
+                      }
+                  };
+                  request(options, function(err, res, Accounts) {
+                    if (err) {
+                      console.log('error:', err)
+                      // error handling
+                      tag="false"
+                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                    }
+                    accounts = JSON.parse(Accounts)
+                    responseText = response.output.text
+                    context = response.context;
+                    socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, beneficiaries:beneficiaries});
+                  });
+                });
+              }
+              else {
                 responseText = response.output.text
                 socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user});
               }
@@ -1095,6 +1701,94 @@ socketIo.on('connection', socket => {
                   responseText = response.output.text
                   context = response.context;
                   socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                });
+              } else {
+                responseText = response.output.text
+                socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user});
+              }
+            }
+            else if (entity.entity == 'expenseType') {
+              var node = response.output.nodes_visited[0]
+              if (node == 'slot_124_1512392787024') {
+                tag = 'OTPTransfer'
+                for (let i = 0; i < accounts.length; i++) {
+                  if (accounts[i].ACCOUNT_NO == response.context.accountNo) {
+                    response.context['bankName'] = accounts[i].BANK_NAME;
+                    response.context['totalSpend'] = accounts[i].SPEND;
+                  }
+                }
+                var form = {
+                  first_name: user[0].FIRST_NAME,
+                  last_name: user[0].LAST_NAME,
+                  email: user[0].EMAIL,
+                  account_no: response.context.accountNo,
+                  bank_name: response.context.bankName,
+                  amount: response.context.transferAmount,
+                  description: response.context.description
+                };
+
+                var formData = querystring.stringify(form);
+                var contentLength = formData.length;
+
+                const options = {
+                  url: bank+"/bank/transfer",
+                  headers: {
+                    'Content-Length': contentLength,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  },
+                  body: formData,
+                  method: 'POST'
+                };
+                request(options, function(err, res, InitiateTransfer) {
+                  if (err) {
+                    console.log('error:', err)
+                    // error handling
+                    tag="false"
+                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                  }
+                  var initiateTransfer = JSON.parse(InitiateTransfer)
+                  response.context['bankIT'] = initiateTransfer[1];
+                  if (initiateTransfer[0].status != 'Error') {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = response.output.text
+                      context = response.context;
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  } else {
+                    const options = {
+                        url: bank+"/user/account",
+                        method: 'GET',
+                        headers: {
+                            'bvn': user[0].BVN
+                        }
+                    };
+                    request(options, function(err, res, Accounts) {
+                      if (err) {
+                        console.log('error:', err)
+                        // error handling
+                        tag="false"
+                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                      }
+                      accounts = JSON.parse(Accounts)
+                      responseText = initiateTransfer[1].response
+                      context = {};
+                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                    });
+                  }
                 });
               } else {
                 responseText = response.output.text
@@ -1164,11 +1858,14 @@ socketIo.on('connection', socket => {
                             socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
                           }
                           transactions = JSON.parse(Transactions)
+                          //To-do: Send email notification
                           responseText = response.output.text
+                          context = {}
                           socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
                         });
                       });
                     } else {
+                      tag = 'addAccountDeclined'
                       const options = {
                           url: bank+"/user/account",
                           method: 'GET',
@@ -1185,6 +1882,7 @@ socketIo.on('connection', socket => {
                         }
                         accounts = JSON.parse(Accounts)
                         responseText = user[0].FIRST_NAME + ' You already have this account in our record!'
+                        context = {}
                         socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                       });
                     }
@@ -1208,6 +1906,7 @@ socketIo.on('connection', socket => {
                     }
                     accounts = JSON.parse(Accounts)
                     responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                   });
                 }
@@ -1276,11 +1975,14 @@ socketIo.on('connection', socket => {
                             socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
                           }
                           transactions = JSON.parse(Transactions)
+                          //To-do: Send email notification
                           responseText = response.output.text
+                          context = {}
                           socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
                         });
                       });
                     } else {
+                      tag = 'addCardDeclined'
                       const options = {
                           url: bank+"/user/account",
                           method: 'GET',
@@ -1297,6 +1999,7 @@ socketIo.on('connection', socket => {
                         }
                         accounts = JSON.parse(Accounts)
                         responseText = user[0].FIRST_NAME + ' You already have this card in our record!'
+                        context = {}
                         socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                       });
                     }
@@ -1320,6 +2023,7 @@ socketIo.on('connection', socket => {
                     }
                     accounts = JSON.parse(Accounts)
                     responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                   });
                 }
@@ -1384,10 +2088,13 @@ socketIo.on('connection', socket => {
                           }
                           transactions = JSON.parse(Transactions)
                           responseText = response.output.text
+                          context = {}
+                          // To-do: Send email notification
                           socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
                         });
                       });
                     } else {
+                      tag = 'deleteCardDeclined'
                       const options = {
                           url: bank+"/user/account",
                           method: 'GET',
@@ -1404,6 +2111,7 @@ socketIo.on('connection', socket => {
                         }
                         accounts = JSON.parse(Accounts)
                         responseText = user[0].FIRST_NAME + ' There is no card attached to this account!'
+                        context = {}
                         socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                       });
                     }
@@ -1427,6 +2135,7 @@ socketIo.on('connection', socket => {
                     }
                     accounts = JSON.parse(Accounts)
                     responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                   });
                 }
@@ -1517,6 +2226,7 @@ socketIo.on('connection', socket => {
                               }
                               transactions = JSON.parse(Transactions)
                               responseText = response.output.text
+                              context = {}
                               socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
                             });
                           });
@@ -1537,11 +2247,13 @@ socketIo.on('connection', socket => {
                             }
                             accounts = JSON.parse(Accounts)
                             responseText = user[0].FIRST_NAME + ' There is no card attached to this account!'
+                            context = {}
                             socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                           });
                         }
                       });
                     } else {
+                      tag = 'deleteAccountDeclined'
                       const options = {
                           url: bank+"/user/account",
                           method: 'GET',
@@ -1557,7 +2269,9 @@ socketIo.on('connection', socket => {
                           socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
                         }
                         accounts = JSON.parse(Accounts)
-                        responseText = user[0].FIRST_NAME + ' There is no card attached to this account!'
+                        // To-do: Send email notification
+                        responseText = user[0].FIRST_NAME + ' There is no such account in my record!'
+                        context = {}
                         socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                       });
                     }
@@ -1581,6 +2295,1190 @@ socketIo.on('connection', socket => {
                     }
                     accounts = JSON.parse(Accounts)
                     responseText = response.output.text
+                    context = {}
+                    socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                  });
+                }
+              }
+              else if (node == 'slot_1_1521708707473') {
+                if (response.context.transferFund && response.context.transferFund.split(":")[1] == 'yes') {
+                  tag = 'transferConfirmed'
+                  var form = {
+                    esacode: response.context.esaCode,
+                    session: response.context.bankIT.sessionid,
+                    request: response.context.bankIT.requestid
+                  };
+
+                  var formData = querystring.stringify(form);
+                  var contentLength = formData.length;
+
+                  const options = {
+                    url: bank+"/account/debit",
+                    headers: {
+                      'Content-Length': contentLength,
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData,
+                    method: 'POST'
+                  };
+                  request(options, function(err, res, FinalisePaymentStatus) {
+                    if (err) {
+                      console.log('error:', err)
+                      // error handling
+                      tag="false"
+                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                    }
+                    var finalisePaymentStatus = JSON.parse(FinalisePaymentStatus)
+                    if (finalisePaymentStatus[0].status != 'Error') {
+                      var form = {
+                        destination: response.context.recipientAccount,
+                        amount: response.context.transferAmount,
+                        bank_name: response.context.recipientBank
+                      };
+
+                      var formData = querystring.stringify(form);
+                      var contentLength = formData.length;
+
+                      const options = {
+                        url: bank+"/transfer/fund",
+                        headers: {
+                          'Content-Length': contentLength,
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData,
+                        method: 'POST'
+                      };
+                      request(options, function(err, res, FundTransferStatus) {
+                        if (err) {
+                          console.log('error:', err)
+                          // error handling
+                          tag="false"
+                          socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                        }
+                        var fundTransferStatus = JSON.parse(FundTransferStatus)
+                        if (fundTransferStatus[0] == "0") {
+                          var form = {
+                            bvn: user[0].BVN,
+                            account_no: response.context.accountNo,
+                            recipient_no: response.context.recipientAccount,
+                            amount: response.context.transferAmount,
+                            reference: fundTransferStatus[2],
+                            esacode: response.context.esaCode,
+                            bank_it: response.context.bankIT.status,
+                            switch_it: fundTransferStatus[0],
+                            session: response.context.bankIT.sessionid
+                          };
+
+                          var receipt = [form]
+                          var formData = querystring.stringify(form);
+                          var contentLength = formData.length;
+
+                          const options = {
+                            url: bank+"/transfer",
+                            headers: {
+                              'Content-Length': contentLength,
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: formData,
+                            method: 'POST'
+                          };
+                          request(options, function(err, res, AddFundTransferStatus) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            var addfundTransferStatus = JSON.parse(AddFundTransferStatus)
+                            if (addfundTransferStatus[0].status != 'Error') {
+                              var form = {
+                                key: "SPEND",
+                                value: Number(response.context.totalSpend) + Number(response.context.transferAmount),
+                                account_no: response.context.accountNo
+                              };
+
+                              var formData = querystring.stringify(form);
+                              var contentLength = formData.length;
+
+                              const options = {
+                                url: bank+"/account",
+                                headers: {
+                                  'Content-Length': contentLength,
+                                  'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: formData,
+                                method: 'PUT'
+                              };
+                              request(options, function(err, res, UpdateSpendStatus) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                var updateSpendStatus = JSON.parse(UpdateSpendStatus)
+                                if (updateSpendStatus[0].status != 'Error'){
+                                  const options = {
+                                      url: bank+"/account",
+                                      method: 'GET',
+                                      headers: {
+                                          'account_no': response.context.accountNo
+                                      }
+                                  };
+                                  request(options, function(err, res, Accounts) {
+                                    if (err) {
+                                      console.log('error:', err)
+                                      // error handling
+                                      tag="false"
+                                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                    }
+                                    accounts = JSON.parse(Accounts)
+                                    const options = {
+                                        url: bank+"/account/transaction",
+                                        method: 'GET',
+                                        headers: {
+                                            'account_no': response.context.accountNo
+                                        }
+                                    };
+                                    request(options, function(err, res, Transactions) {
+                                      if (err) {
+                                        console.log('error:', err)
+                                        // error handling
+                                        tag="false"
+                                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                      }
+                                      transactions = JSON.parse(Transactions)
+                                      // ======== Free Airtime for testers ======
+                                      if (transactions.length == 1) {
+                                        if (user[0].CATEGORY != 'Tester') {
+                                          var form = {
+                                            phone: user[0].PHONE
+                                          };
+
+                                          var formData = querystring.stringify(form);
+                                          var contentLength = formData.length;
+
+                                          const options = {
+                                            url: bank+"/kyc/phone",
+                                            headers: {
+                                              'Content-Length': contentLength,
+                                              'Content-Type': 'application/x-www-form-urlencoded'
+                                            },
+                                            body: formData,
+                                            method: 'POST'
+                                          };
+                                          request(options, function(err, res, PhoneDetails) {
+                                            if (err) {
+                                              console.log('error:', err)
+                                              // error handling
+                                              tag="false"
+                                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                            }
+                                            var phoneDetails = JSON.parse(PhoneDetails)
+                                            if (phoneDetails.valid) {
+                                              var form = {
+                                                destination: user[0].PHONE,
+                                                amount: 50,
+                                                sender_name: 'Josla Electric',
+                                                telco_name: phoneDetails.carrier.split(" ")[0].toLowerCase()
+                                              };
+
+                                              var formData = querystring.stringify(form);
+                                              var contentLength = formData.length;
+
+                                              const options = {
+                                                url: bank+"/topup/airtime",
+                                                headers: {
+                                                  'Content-Length': contentLength,
+                                                  'Content-Type': 'application/x-www-form-urlencoded'
+                                                },
+                                                body: formData,
+                                                method: 'POST'
+                                              };
+                                              request(options, function(err, res, FreeAirtimeStatus) {
+                                                if (err) {
+                                                  console.log('error:', err)
+                                                  // error handling
+                                                  tag="false"
+                                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                                }
+                                                var freeAirtimeStatus = JSON.parse(FreeAirtimeStatus)
+                                                if (freeAirtimeStatus[0] == "0") {
+                                                  var form = {
+                                                    key: 'STATUS_ID',
+                                                    value: 4,
+                                                    phone: user[0].PHONE
+                                                  };
+
+                                                  var formData = querystring.stringify(form);
+                                                  var contentLength = formData.length;
+
+                                                  const options = {
+                                                    url: bank+"/user",
+                                                    headers: {
+                                                      'Content-Length': contentLength,
+                                                      'Content-Type': 'application/x-www-form-urlencoded'
+                                                    },
+                                                    body: formData,
+                                                    method: 'PUT'
+                                                  };
+                                                  request(options, function(err, res, UpdateUserStatus) {
+                                                    if (err) {
+                                                      console.log('error:', err)
+                                                      // error handling
+                                                      tag="false"
+                                                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                                    }
+                                                    var updateUserStatus = JSON.parse(UpdateUserStatus)
+                                                    if (updateUserStatus[0].status != 'Error') {
+                                                      const options = {
+                                                          url: bank+"/user",
+                                                          method: 'GET',
+                                                          headers: {
+                                                              'phone': username
+                                                          }
+                                                      };
+                                                      request(options, function(err, res, User) {
+                                                        if (err) {
+                                                          console.log('error:', err)
+                                                          // error handling
+                                                          tag="false"
+                                                          socket.emit('server:authentication', {username: 'Kira', message: 'Sorry, please ensure your Log in details are properly inputed', tag:tag});
+                                                        }
+                                                        user = JSON.parse(User)
+                                                        responseText = response.output.text
+                                                        context = {}
+                                                        socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                                      });
+                                                    }
+                                                    else {
+                                                      responseText = response.output.text
+                                                      context = {}
+                                                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                                    }
+                                                  });
+                                                }
+                                                else {
+                                                  responseText = response.output.text
+                                                  context = {}
+                                                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                                }
+                                              });
+                                            }
+                                            else {
+                                              responseText = response.output.text
+                                              context = {}
+                                              socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                            }
+                                          });
+                                        }
+                                        else {
+                                          responseText = response.output.text
+                                          context = {}
+                                          socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                        }
+                                      } else {
+                                        responseText = response.output.text
+                                        context = {}
+                                        socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                      }
+                                    });
+                                  });
+                                }
+                                else {
+                                  const options = {
+                                      url: bank+"/account",
+                                      method: 'GET',
+                                      headers: {
+                                          'account_no': response.context.accountNo
+                                      }
+                                  };
+                                  request(options, function(err, res, Accounts) {
+                                    if (err) {
+                                      console.log('error:', err)
+                                      // error handling
+                                      tag="false"
+                                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                    }
+                                    accounts = JSON.parse(Accounts)
+                                    const options = {
+                                        url: bank+"/account/transaction",
+                                        method: 'GET',
+                                        headers: {
+                                            'account_no': response.context.accountNo
+                                        }
+                                    };
+                                    request(options, function(err, res, Transactions) {
+                                      if (err) {
+                                        console.log('error:', err)
+                                        // error handling
+                                        tag="false"
+                                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                      }
+                                      transactions = JSON.parse(Transactions)
+                                      responseText = response.output.text
+                                      context = {}
+                                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                    });
+                                  });
+                                }
+                              });
+                            } else {
+                              const options = {
+                                  url: bank+"/account",
+                                  method: 'GET',
+                                  headers: {
+                                      'account_no': response.context.accountNo
+                                  }
+                              };
+                              request(options, function(err, res, Accounts) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                accounts = JSON.parse(Accounts)
+                                const options = {
+                                    url: bank+"/account/transaction",
+                                    method: 'GET',
+                                    headers: {
+                                        'account_no': response.context.accountNo
+                                    }
+                                };
+                                request(options, function(err, res, Transactions) {
+                                  if (err) {
+                                    console.log('error:', err)
+                                    // error handling
+                                    tag="false"
+                                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                  }
+                                  transactions = JSON.parse(Transactions)
+                                  responseText = response.output.text
+                                  context = {}
+                                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                });
+                              });
+                            }
+                          });
+                        }
+                        else {
+                          tag = 'transferDeclined'
+                          var form = {
+                            bvn: user[0].BVN,
+                            account_no: response.context.accountNo,
+                            recipient_no: response.context.recipientAccount,
+                            amount: response.context.transferAmount,
+                            reference: 0,
+                            esacode: response.context.esaCode,
+                            bank_it: response.context.bankIT.status,
+                            switch_it: fundTransferStatus[0],
+                            session: response.context.bankIT.sessionid
+                          };
+
+                          var formData = querystring.stringify(form);
+                          var contentLength = formData.length;
+
+                          const options = {
+                            url: bank+"/transfer",
+                            headers: {
+                              'Content-Length': contentLength,
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: formData,
+                            method: 'POST'
+                          };
+                          request(options, function(err, res, AddFundTransferStatus) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            var addfundTransferStatus = JSON.parse(AddFundTransferStatus)
+                            if (addfundTransferStatus[0].status != 'Error') {
+                              const options = {
+                                  url: bank+"/account",
+                                  method: 'GET',
+                                  headers: {
+                                      'account_no': response.context.accountNo
+                                  }
+                              };
+                              request(options, function(err, res, Accounts) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                accounts = JSON.parse(Accounts)
+                                const options = {
+                                    url: bank+"/account/transaction",
+                                    method: 'GET',
+                                    headers: {
+                                        'account_no': response.context.accountNo
+                                    }
+                                };
+                                request(options, function(err, res, Transactions) {
+                                  if (err) {
+                                    console.log('error:', err)
+                                    // error handling
+                                    tag="false"
+                                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                  }
+                                  transactions = JSON.parse(Transactions)
+                                  responseText = fundTransferStatus[1] + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
+                                });
+                              });
+                            } else {
+                              const options = {
+                                  url: bank+"/account",
+                                  method: 'GET',
+                                  headers: {
+                                      'account_no': response.context.accountNo
+                                  }
+                              };
+                              request(options, function(err, res, Accounts) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                accounts = JSON.parse(Accounts)
+                                responseText = fundTransferStatus[1] + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                                context = {}
+                                socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                              });
+                            }
+                          });
+                        }
+                      });
+                    }
+                    else {
+                      tag = 'transferDeclined'
+                      var form = {
+                        bvn: user[0].BVN,
+                        account_no: response.context.accountNo,
+                        recipient_no: response.context.recipientAccount,
+                        amount: response.context.transferAmount,
+                        reference: 0,
+                        esacode: response.context.esaCode,
+                        bank_it: finalisePaymentStatus[0],
+                        switch_it: 'Error',
+                        session: response.context.bankIT.sessionid
+                      };
+
+                      var formData = querystring.stringify(form);
+                      var contentLength = formData.length;
+
+                      const options = {
+                        url: bank+"/transfer",
+                        headers: {
+                          'Content-Length': contentLength,
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData,
+                        method: 'POST'
+                      };
+                      request(options, function(err, res, AddFundTransferStatus) {
+                        if (err) {
+                          console.log('error:', err)
+                          // error handling
+                          tag="false"
+                          socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                        }
+                        var addfundTransferStatus = JSON.parse(AddFundTransferStatus)
+                        if (addfundTransferStatus[0].status != 'Error') {
+                          const options = {
+                              url: bank+"/account",
+                              method: 'GET',
+                              headers: {
+                                  'account_no': response.context.accountNo
+                              }
+                          };
+                          request(options, function(err, res, Accounts) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            accounts = JSON.parse(Accounts)
+                            const options = {
+                                url: bank+"/account/transaction",
+                                method: 'GET',
+                                headers: {
+                                    'account_no': response.context.accountNo
+                                }
+                            };
+                            request(options, function(err, res, Transactions) {
+                              if (err) {
+                                console.log('error:', err)
+                                // error handling
+                                tag="false"
+                                socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                              }
+                              transactions = JSON.parse(Transactions)
+                              responseText = finalisePaymentStatus[1].response + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                              context = {}
+                              socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
+                            });
+                          });
+                        } else {
+                          const options = {
+                              url: bank+"/account",
+                              method: 'GET',
+                              headers: {
+                                  'account_no': response.context.accountNo
+                              }
+                          };
+                          request(options, function(err, res, Accounts) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            accounts = JSON.parse(Accounts)
+                            const options = {
+                                url: bank+"/account/transaction",
+                                method: 'GET',
+                                headers: {
+                                    'account_no': response.context.accountNo
+                                }
+                            };
+                            request(options, function(err, res, Transactions) {
+                              if (err) {
+                                console.log('error:', err)
+                                // error handling
+                                tag="false"
+                                socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                              }
+                              transactions = JSON.parse(Transactions)
+                              responseText = finalisePaymentStatus[1].response + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                              context = {}
+                              socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions});
+                            });
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+                else {
+                  tag = 'transferDeclined'
+                  const options = {
+                      url: bank+"/user/account",
+                      method: 'GET',
+                      headers: {
+                          'bvn': user[0].BVN
+                      }
+                  };
+                  request(options, function(err, res, Accounts) {
+                    if (err) {
+                      console.log('error:', err)
+                      // error handling
+                      tag="false"
+                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                    }
+                    accounts = JSON.parse(Accounts)
+                    responseText = response.output.text
+                    context = {}
+                    socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
+                  });
+                }
+              }else if (node == 'slot_20_1518767730864') {
+                if (response.context.topupAirtime && response.context.topupAirtime.split(":")[1] == 'yes') {
+                  tag = 'topupConfirmed'
+                  var form = {
+                    esacode: response.context.esaCode,
+                    session: response.context.bankIT.sessionid,
+                    request: response.context.bankIT.requestid
+                  };
+
+                  var formData = querystring.stringify(form);
+                  var contentLength = formData.length;
+
+                  const options = {
+                    url: bank+"/account/debit",
+                    headers: {
+                      'Content-Length': contentLength,
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData,
+                    method: 'POST'
+                  };
+                  request(options, function(err, res, FinalisePaymentStatus) {
+                    if (err) {
+                      console.log('error:', err)
+                      // error handling
+                      tag="false"
+                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                    }
+                    var finalisePaymentStatus = JSON.parse(FinalisePaymentStatus)
+                    if (finalisePaymentStatus[0].status != 'Error') {
+                      var form = {
+                        destination: response.context.topupPhone,
+                        amount: response.context.topupAmount,
+                        sender_name: user[0].FIRST_NAME + ' ' + user[0].LAST_NAME,
+                        telco_name: response.context.telcoName
+                      };
+
+                      var formData = querystring.stringify(form);
+                      var contentLength = formData.length;
+
+                      const options = {
+                        url: bank+"/topup/airtime",
+                        headers: {
+                          'Content-Length': contentLength,
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData,
+                        method: 'POST'
+                      };
+                      request(options, function(err, res, AirtimeTopupStatus) {
+                        if (err) {
+                          console.log('error:', err)
+                          // error handling
+                          tag="false"
+                          socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                        }
+                        var airtimeTopupStatus = JSON.parse(AirtimeTopupStatus)
+                        if (airtimeTopupStatus[0] == "0") {
+                          var form = {
+                            bvn: user[0].BVN,
+                            account_no: response.context.accountNo,
+                            telco_name: response.context.telcoName,
+                            amount: response.context.topupAmount,
+                            reference: airtimeTopupStatus[2],
+                            esacode: response.context.esaCode,
+                            bank_it: response.context.bankIT.status,
+                            switch_it: airtimeTopupStatus[0],
+                            session: response.context.bankIT.sessionid
+                          };
+
+                          var receipt = [form]
+                          var formData = querystring.stringify(form);
+                          var contentLength = formData.length;
+
+                          const options = {
+                            url: bank+"/topup",
+                            headers: {
+                              'Content-Length': contentLength,
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: formData,
+                            method: 'POST'
+                          };
+                          request(options, function(err, res, AddAirtimeTopupStatus) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            var addAirtimeTopupStatus = JSON.parse(AddAirtimeTopupStatus)
+                            if (addAirtimeTopupStatus[0].status != 'Error') {
+                              var form = {
+                                key: "SPEND",
+                                value: Number(response.context.totalSpend) + Number(response.context.topupAmount),
+                                account_no: response.context.accountNo
+                              };
+
+                              var formData = querystring.stringify(form);
+                              var contentLength = formData.length;
+
+                              const options = {
+                                url: bank+"/account",
+                                headers: {
+                                  'Content-Length': contentLength,
+                                  'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: formData,
+                                method: 'PUT'
+                              };
+                              request(options, function(err, res, UpdateSpendStatus) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                var updateSpendStatus = JSON.parse(UpdateSpendStatus)
+                                if (updateSpendStatus[0].status != 'Error'){
+                                  const options = {
+                                      url: bank+"/user/account",
+                                      method: 'GET',
+                                      headers: {
+                                          'bvn': user[0].BVN
+                                      }
+                                  };
+                                  request(options, function(err, res, Accounts) {
+                                    if (err) {
+                                      console.log('error:', err)
+                                      // error handling
+                                      tag="false"
+                                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                    }
+                                    accounts = JSON.parse(Accounts)
+                                    const options = {
+                                        url: bank+"/user/transaction",
+                                        method: 'GET',
+                                        headers: {
+                                            'bvn': user[0].BVN
+                                        }
+                                    };
+                                    request(options, function(err, res, Transactions) {
+                                      if (err) {
+                                        console.log('error:', err)
+                                        // error handling
+                                        tag="false"
+                                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                      }
+                                      transactions = JSON.parse(Transactions)
+                                      // ======== Free Airtime for testers ======
+                                      if (transactions.length == 1) {
+                                        if (user[0].CATEGORY != 'Tester') {
+                                          var form = {
+                                            phone: user[0].PHONE
+                                          };
+
+                                          var formData = querystring.stringify(form);
+                                          var contentLength = formData.length;
+
+                                          const options = {
+                                            url: bank+"/kyc/phone",
+                                            headers: {
+                                              'Content-Length': contentLength,
+                                              'Content-Type': 'application/x-www-form-urlencoded'
+                                            },
+                                            body: formData,
+                                            method: 'POST'
+                                          };
+                                          request(options, function(err, res, PhoneDetails) {
+                                            if (err) {
+                                              console.log('error:', err)
+                                              // error handling
+                                              tag="false"
+                                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                            }
+                                            var phoneDetails = JSON.parse(PhoneDetails)
+                                            if (phoneDetails.valid) {
+                                              var form = {
+                                                destination: user[0].PHONE,
+                                                amount: (0.2*parseInt(response.context.topupAmount)),
+                                                sender_name: 'Josla Electric',
+                                                telco_name: phoneDetails.carrier.split(" ")[0].toLowerCase()
+                                              };
+
+                                              var formData = querystring.stringify(form);
+                                              var contentLength = formData.length;
+
+                                              const options = {
+                                                url: bank+"/topup/airtime",
+                                                headers: {
+                                                  'Content-Length': contentLength,
+                                                  'Content-Type': 'application/x-www-form-urlencoded'
+                                                },
+                                                body: formData,
+                                                method: 'POST'
+                                              };
+                                              request(options, function(err, res, FreeAirtimeStatus) {
+                                                if (err) {
+                                                  console.log('error:', err)
+                                                  // error handling
+                                                  tag="false"
+                                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                                }
+                                                var freeAirtimeStatus = JSON.parse(FreeAirtimeStatus)
+                                                if (freeAirtimeStatus[0] == "0") {
+                                                  var form = {
+                                                    key: 'STATUS_ID',
+                                                    value: 4,
+                                                    phone: user[0].PHONE
+                                                  };
+
+                                                  var formData = querystring.stringify(form);
+                                                  var contentLength = formData.length;
+
+                                                  const options = {
+                                                    url: bank+"/user",
+                                                    headers: {
+                                                      'Content-Length': contentLength,
+                                                      'Content-Type': 'application/x-www-form-urlencoded'
+                                                    },
+                                                    body: formData,
+                                                    method: 'PUT'
+                                                  };
+                                                  request(options, function(err, res, UpdateUserStatus) {
+                                                    if (err) {
+                                                      console.log('error:', err)
+                                                      // error handling
+                                                      tag="false"
+                                                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                                    }
+                                                    var updateUserStatus = JSON.parse(UpdateUserStatus)
+                                                    if (updateUserStatus[0].status != 'Error') {
+                                                      const options = {
+                                                          url: bank+"/user",
+                                                          method: 'GET',
+                                                          headers: {
+                                                              'phone': username
+                                                          }
+                                                      };
+                                                      request(options, function(err, res, User) {
+                                                        if (err) {
+                                                          console.log('error:', err)
+                                                          // error handling
+                                                          tag="false"
+                                                          socket.emit('server:authentication', {username: 'Kira', message: 'Sorry, please ensure your Log in details are properly inputed', tag:tag});
+                                                        }
+                                                        user = JSON.parse(User)
+                                                        responseText = response.output.text
+                                                        context = {}
+                                                        socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                                      });
+                                                    }
+                                                    else {
+                                                      responseText = response.output.text
+                                                      context = {}
+                                                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                                    }
+                                                  });
+                                                }
+                                                else {
+                                                  responseText = response.output.text
+                                                  context = {}
+                                                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                                }
+                                              });
+                                            }
+                                            else {
+                                              responseText = response.output.text
+                                              context = {}
+                                              socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                            }
+                                          });
+                                        }
+                                        else {
+                                          responseText = response.output.text
+                                          context = {}
+                                          socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                        }
+                                      } else {
+                                        responseText = response.output.text
+                                        context = {}
+                                        socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                      }
+                                    });
+                                  });
+                                }
+                                else {
+                                  const options = {
+                                      url: bank+"/user/account",
+                                      method: 'GET',
+                                      headers: {
+                                          'bvn': user[0].BVN
+                                      }
+                                  };
+                                  request(options, function(err, res, Accounts) {
+                                    if (err) {
+                                      console.log('error:', err)
+                                      // error handling
+                                      tag="false"
+                                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                    }
+                                    accounts = JSON.parse(Accounts)
+                                    const options = {
+                                        url: bank+"/user/transaction",
+                                        method: 'GET',
+                                        headers: {
+                                            'bvn': user[0].BVN
+                                        }
+                                    };
+                                    request(options, function(err, res, Transactions) {
+                                      if (err) {
+                                        console.log('error:', err)
+                                        // error handling
+                                        tag="false"
+                                        socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                      }
+                                      transactions = JSON.parse(Transactions)
+                                      responseText = response.output.text
+                                      context = {}
+                                      socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                    });
+                                  });
+                                }
+                              });
+                            } else {
+                              const options = {
+                                  url: bank+"/user/account",
+                                  method: 'GET',
+                                  headers: {
+                                      'bvn': user[0].BVN
+                                  }
+                              };
+                              request(options, function(err, res, Accounts) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                accounts = JSON.parse(Accounts)
+                                const options = {
+                                    url: bank+"/user/transaction",
+                                    method: 'GET',
+                                    headers: {
+                                        'bvn': user[0].BVN
+                                    }
+                                };
+                                request(options, function(err, res, Transactions) {
+                                  if (err) {
+                                    console.log('error:', err)
+                                    // error handling
+                                    tag="false"
+                                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                  }
+                                  transactions = JSON.parse(Transactions)
+                                  responseText = response.output.text
+                                  context = {}
+                                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                });
+                              });
+                            }
+                          });
+                        }
+                        else {
+                          tag = 'topupDeclined'
+                          var form = {
+                            bvn: user[0].BVN,
+                            account_no: response.context.accountNo,
+                            telco_name: response.context.telcoName,
+                            amount: response.context.topupAmount,
+                            reference: 0,
+                            esacode: response.context.esaCode,
+                            bank_it: response.context.bankIT.status,
+                            switch_it: airtimeTopupStatus[0],
+                            session: response.context.bankIT.sessionid
+                          };
+
+                          var receipt = [form]
+                          var formData = querystring.stringify(form);
+                          var contentLength = formData.length;
+
+                          const options = {
+                            url: bank+"/topup",
+                            headers: {
+                              'Content-Length': contentLength,
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: formData,
+                            method: 'POST'
+                          };
+                          request(options, function(err, res, AddFundTransferStatus) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            var addAirtimeTopupStatus = JSON.parse(AddAirtimeTopupStatus)
+                            if (addAirtimeTopupStatus[0].status != 'Error') {
+                              const options = {
+                                  url: bank+"/user/account",
+                                  method: 'GET',
+                                  headers: {
+                                      'bvn': user[0].BVN
+                                  }
+                              };
+                              request(options, function(err, res, Accounts) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                accounts = JSON.parse(Accounts)
+                                const options = {
+                                    url: bank+"/user/transaction",
+                                    method: 'GET',
+                                    headers: {
+                                        'bvn': user[0].BVN
+                                    }
+                                };
+                                request(options, function(err, res, Transactions) {
+                                  if (err) {
+                                    console.log('error:', err)
+                                    // error handling
+                                    tag="false"
+                                    socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                                  }
+                                  transactions = JSON.parse(Transactions)
+                                  responseText = airtimeTopupStatus[1] + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                                  socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                                });
+                              });
+                            } else {
+                              const options = {
+                                  url: bank+"/user/account",
+                                  method: 'GET',
+                                  headers: {
+                                      'bvn': user[0].BVN
+                                  }
+                              };
+                              request(options, function(err, res, Accounts) {
+                                if (err) {
+                                  console.log('error:', err)
+                                  // error handling
+                                  tag="false"
+                                  socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                                }
+                                accounts = JSON.parse(Accounts)
+                                responseText = airtimeTopupStatus[1] + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                                context = {}
+                                socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, receipt:receipt});
+                              });
+                            }
+                          });
+                        }
+                      });
+                    }
+                    else {
+                      tag = 'topupDeclined'
+                      var form = {
+                        bvn: user[0].BVN,
+                        account_no: response.context.accountNo,
+                        telco_name: response.context.telcoName,
+                        amount: response.context.topupAmount,
+                        reference: 0,
+                        esacode: response.context.esaCode,
+                        bank_it: finalisePaymentStatus[0],
+                        switch_it: 'Error',
+                        session: response.context.bankIT.sessionid
+                      };
+
+                      receipt = [form]
+
+                      var formData = querystring.stringify(form);
+                      var contentLength = formData.length;
+
+                      const options = {
+                        url: bank+"/transfer",
+                        headers: {
+                          'Content-Length': contentLength,
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData,
+                        method: 'POST'
+                      };
+                      request(options, function(err, res, AddAirtimeTopupStatus) {
+                        if (err) {
+                          console.log('error:', err)
+                          // error handling
+                          tag="false"
+                          socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                        }
+                        var addAirtimeTopupStatus = JSON.parse(AddAirtimeTopupStatus)
+                        if (addAirtimeTopupStatus[0].status != 'Error') {
+                          const options = {
+                              url: bank+"/user/account",
+                              method: 'GET',
+                              headers: {
+                                  'bvn': user[0].BVN
+                              }
+                          };
+                          request(options, function(err, res, Accounts) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            accounts = JSON.parse(Accounts)
+                            const options = {
+                                url: bank+"/user/transaction",
+                                method: 'GET',
+                                headers: {
+                                    'bvn': user[0].BVN
+                                }
+                            };
+                            request(options, function(err, res, Transactions) {
+                              if (err) {
+                                console.log('error:', err)
+                                // error handling
+                                tag="false"
+                                socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                              }
+                              transactions = JSON.parse(Transactions)
+                              responseText = finalisePaymentStatus[1].response + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                              context = {}
+                              socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                            });
+                          });
+                        } else {
+                          const options = {
+                              url: bank+"/user/account",
+                              method: 'GET',
+                              headers: {
+                                  'bvn': user[0].BVN
+                              }
+                          };
+                          request(options, function(err, res, Accounts) {
+                            if (err) {
+                              console.log('error:', err)
+                              // error handling
+                              tag="false"
+                              socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                            }
+                            accounts = JSON.parse(Accounts)
+                            const options = {
+                                url: bank+"/user/transaction",
+                                method: 'GET',
+                                headers: {
+                                    'bvn': user[0].BVN
+                                }
+                            };
+                            request(options, function(err, res, Transactions) {
+                              if (err) {
+                                console.log('error:', err)
+                                // error handling
+                                tag="false"
+                                socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user, accounts:accounts});
+                              }
+                              transactions = JSON.parse(Transactions)
+                              responseText = finalisePaymentStatus[1].response + '. If you have been debited for this transaction, please expect a refund within 24 hrs.'
+                              context = {}
+                              socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts, transactions:transactions, receipt:receipt});
+                            });
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+                else {
+                  tag = 'topupDeclined'
+                  const options = {
+                      url: bank+"/user/account",
+                      method: 'GET',
+                      headers: {
+                          'bvn': user[0].BVN
+                      }
+                  };
+                  request(options, function(err, res, Accounts) {
+                    if (err) {
+                      console.log('error:', err)
+                      // error handling
+                      tag="false"
+                      socket.emit(namespace, {username: 'Kira', message: 'System error, please try again in 5 mins', tag:tag, user:user});
+                    }
+                    accounts = JSON.parse(Accounts)
+                    responseText = response.output.text
+                    context = {}
                     socket.emit(namespace, {username: 'Kira', message: responseText, tag:tag, user:user, accounts:accounts});
                   });
                 }

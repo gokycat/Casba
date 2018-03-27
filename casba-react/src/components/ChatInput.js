@@ -33,7 +33,7 @@ class ChatInput extends React.Component {
   render() {
     return (
       <form className="chat-input form-group" onSubmit={this.submitHandler}>
-        <input type={this.props.inputType}
+        <input type="text"
           onChange={this.textChangeHandler}
           className='form-control form-control-lg input-lg'
           value={this.state.chatInput}

@@ -62,9 +62,9 @@ const transfer = {
           console.log(err);
           return conn.closeSync();
         }
-        
+
         //Bind and Execute the statment asynchronously
-        stmt.execute([Number((Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)), Number(data.bvn), Number(data.accountNo), Number(data.recipientNo), data.amount, Number(data.session), Number(data.reference), Number(data.esacode), 123456, data.bankIT, data.switchIT, Date.now()], function (err, result) {
+        stmt.execute([Number((Math.random()+' ').substring(2,10)+(Math.random()+' ').substring(2,10)), Number(data.bvn), Number(data.accountNo), Number(data.recipientNo), String(data.amount), Number(data.session), Number(data.reference), Number(data.esacode), 123456, String(data.bankIT), String(data.switchIT), Date.now()], function (err, result) {
           if ( err ) {
             console.log(err);
             transfers[0] = {status:"Error"}
